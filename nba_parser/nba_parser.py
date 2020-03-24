@@ -63,8 +63,34 @@ class PbP:
 
         return player_points_df
 
-    def __assist_calc_player(self):
-        pass
+    def _assist_calc_player(self):
+        """
+        method to calculat players assist totals from a game play by play
+        """
+        assists = self.df[
+            (self.df["event_type_de"] == "shot") & (self.df["shot_made"] == 1)
+        ]
+
+        assists = (
+            assists.groupby(["player2_id", "game_id", "game_date", "player2_team_id"])[
+                ["eventnum"]
+            ]
+            .count()
+            .reset_index()
+        )
+
+        assists["game_date"] = pd.to_datetime(assists["game_date"])
+        assists["player2_team_id"] = assists["player2_team_id"].astype(int)
+        assists.rename(
+            columns={
+                "player2_id": "player_id",
+                "player2_team_id": "team_id",
+                "eventnum": "ast",
+            },
+            inplace=True,
+        )
+
+        return assists
 
     def __rebound_calc_player(self):
         pass

@@ -80,3 +80,28 @@ def test_block_calc_player(setup):
     assert stats_df.loc[stats_df["player_id"] == 948, "blk"].values[0] == 1
     assert stats_df.loc[stats_df["player_id"] == 2549, "blk"].values[0] == 3
     assert stats_df.loc[stats_df["player_id"] == 2059, "blk"].values[0] == 1
+
+
+def test_assist_calc_player(setup):
+    """
+    testing to make sure block calculations are computing properly
+    """
+
+    pbp = setup
+
+    assists = pbp._assist_calc_player()
+    stats_df = pbp._point_calc_player()
+
+    # merging with normal player stats to make sure that players with
+    # zero assists are properly calculated as well
+
+    stats_df = stats_df.merge(
+        assists, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+    )
+    stats_df["ast"] = stats_df["ast"].fillna(0).astype(int)
+
+    assert stats_df.loc[stats_df["player_id"] == 1894, "ast"].values[0] == 5
+    assert stats_df.loc[stats_df["player_id"] == 947, "ast"].values[0] == 7
+    assert stats_df.loc[stats_df["player_id"] == 948, "ast"].values[0] == 3
+    assert stats_df.loc[stats_df["player_id"] == 2549, "ast"].values[0] == 0
+    assert stats_df.loc[stats_df["player_id"] == 2059, "ast"].values[0] == 3
