@@ -92,17 +92,112 @@ class PbP:
 
         return assists
 
-    def __rebound_calc_player(self):
-        pass
+    def _rebound_calc_player(self):
+        """
+        function to calculate player's offensive and defensive rebound totals
+        """
+        rebounds = (
+            self.df.groupby(["player1_id", "game_id", "game_date", "player1_team_id"])[
+                ["is_o_rebound", "is_d_rebound"]
+            ]
+            .sum()
+            .reset_index()
+        )
 
-    def __turnover_calc_player(self):
-        pass
+        rebounds["game_date"] = pd.to_datetime(rebounds["game_date"])
+        rebounds["player1_team_id"] = rebounds["player1_team_id"].astype(int)
+        rebounds.rename(
+            columns={
+                "player1_id": "player_id",
+                "player1_team_id": "team_id",
+                "is_o_rebound": "oreb",
+                "is_d_rebound": "dreb",
+            },
+            inplace=True,
+        )
 
-    def __foul_calc_player(self):
-        pass
+        return rebounds
 
-    def __steal_calc_player(self):
-        pass
+    def _turnover_calc_player(self):
+        """
+        function to calculate player's turnover totals
+        """
+        turnovers = (
+            self.df.groupby(["player1_id", "game_id", "game_date", "player1_team_id"])[
+                ["is_turnover"]
+            ]
+            .sum()
+            .reset_index()
+        )
+
+        turnovers["game_date"] = pd.to_datetime(turnovers["game_date"])
+        turnovers["player1_team_id"] = turnovers["player1_team_id"].astype(int)
+        turnovers.rename(
+            columns={
+                "player1_id": "player_id",
+                "player1_team_id": "team_id",
+                "is_turnover": "tov",
+            },
+            inplace=True,
+        )
+
+        return turnovers
+
+    def _foul_calc_player(self):
+        """
+        method to calculate players personal fouls in a game
+        """
+        fouls = self.df[
+            (self.df["event_type_de"] == "foul")
+            & (
+                self.df["eventmsgactiontype"].isin(
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15, 26, 27, 28]
+                )
+            )
+        ]
+        fouls = (
+            fouls.groupby(["player1_id", "game_id", "game_date", "player1_team_id"])[
+                "eventnum"
+            ]
+            .count()
+            .reset_index()
+        )
+        fouls["game_date"] = pd.to_datetime(fouls["game_date"])
+        fouls["player1_team_id"] = fouls["player1_team_id"].astype(int)
+        fouls.rename(
+            columns={
+                "player1_id": "player_id",
+                "player1_team_id": "team_id",
+                "eventnum": "pf",
+            },
+            inplace=True,
+        )
+
+        return fouls
+
+    def _steal_calc_player(self):
+        """
+        function to calculate player's steal totals
+        """
+        steals = (
+            self.df.groupby(["player2_id", "game_id", "game_date", "player2_team_id"])[
+                ["is_steal"]
+            ]
+            .sum()
+            .reset_index()
+        )
+
+        steals["game_date"] = pd.to_datetime(steals["game_date"])
+        steals["player2_team_id"] = steals["player2_team_id"].astype(int)
+        steals.rename(
+            columns={
+                "player2_id": "player_id",
+                "player2_team_id": "team_id",
+                "is_steal": "stl",
+            },
+            inplace=True,
+        )
+        return steals
 
     def _block_calc_player(self):
         """

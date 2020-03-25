@@ -12,7 +12,7 @@ def setup():
     pbp_df["season"] = 2008
     pbp = PbP(pbp_df)
     # TODO add multiple files here to make the tests more random and more
-    # robust
+    # robust Matt Barlowe 2020-03-24
     yield pbp
 
 
@@ -105,3 +105,104 @@ def test_assist_calc_player(setup):
     assert stats_df.loc[stats_df["player_id"] == 948, "ast"].values[0] == 3
     assert stats_df.loc[stats_df["player_id"] == 2549, "ast"].values[0] == 0
     assert stats_df.loc[stats_df["player_id"] == 2059, "ast"].values[0] == 3
+
+
+def test_rebound_calc_player(setup):
+    """
+    testing to make sure block calculations are computing properly
+    """
+
+    pbp = setup
+
+    rebounds = pbp._rebound_calc_player()
+    stats_df = pbp._point_calc_player()
+
+    # merging with normal player stats to make sure that players with
+    # zero assists are properly calculated as well
+
+    stats_df = stats_df.merge(
+        rebounds, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+    )
+    stats_df["dreb"] = stats_df["dreb"].fillna(0).astype(int)
+    stats_df["oreb"] = stats_df["oreb"].fillna(0).astype(int)
+
+    assert stats_df.loc[stats_df["player_id"] == 1894, "dreb"].values[0] == 2
+    assert stats_df.loc[stats_df["player_id"] == 947, "dreb"].values[0] == 3
+    assert stats_df.loc[stats_df["player_id"] == 948, "dreb"].values[0] == 8
+    assert stats_df.loc[stats_df["player_id"] == 2549, "dreb"].values[0] == 6
+    assert stats_df.loc[stats_df["player_id"] == 2059, "dreb"].values[0] == 4
+
+    assert stats_df.loc[stats_df["player_id"] == 1894, "oreb"].values[0] == 2
+    assert stats_df.loc[stats_df["player_id"] == 947, "oreb"].values[0] == 0
+    assert stats_df.loc[stats_df["player_id"] == 948, "oreb"].values[0] == 4
+    assert stats_df.loc[stats_df["player_id"] == 2549, "oreb"].values[0] == 3
+    assert stats_df.loc[stats_df["player_id"] == 2059, "oreb"].values[0] == 2
+
+
+def test_steal_calc_player(setup):
+    """
+    testing to make sure steal calculations are correct
+    """
+    pbp = setup
+
+    steals = pbp._steal_calc_player()
+    stats_df = pbp._point_calc_player()
+
+    stats_df = stats_df.merge(
+        steals, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+    )
+    stats_df["stl"] = stats_df["stl"].fillna(0).astype(int)
+
+    assert stats_df.loc[stats_df["player_id"] == 1894, "stl"].values[0] == 2
+    assert stats_df.loc[stats_df["player_id"] == 947, "stl"].values[0] == 0
+    assert stats_df.loc[stats_df["player_id"] == 948, "stl"].values[0] == 0
+    assert stats_df.loc[stats_df["player_id"] == 2549, "stl"].values[0] == 0
+    assert stats_df.loc[stats_df["player_id"] == 2059, "stl"].values[0] == 0
+    assert stats_df.loc[stats_df["player_id"] == 1510, "stl"].values[0] == 2
+    assert stats_df.loc[stats_df["player_id"] == 2546, "stl"].values[0] == 3
+
+
+def test_turnover_calc_player(setup):
+    """
+    testing to make sure steal calculations are correct
+    """
+    pbp = setup
+
+    turnovers = pbp._turnover_calc_player()
+    stats_df = pbp._point_calc_player()
+
+    stats_df = stats_df.merge(
+        turnovers, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+    )
+    stats_df["tov"] = stats_df["tov"].fillna(0).astype(int)
+
+    assert stats_df.loc[stats_df["player_id"] == 1894, "tov"].values[0] == 6
+    assert stats_df.loc[stats_df["player_id"] == 947, "tov"].values[0] == 4
+    assert stats_df.loc[stats_df["player_id"] == 948, "tov"].values[0] == 1
+    assert stats_df.loc[stats_df["player_id"] == 2549, "tov"].values[0] == 4
+    assert stats_df.loc[stats_df["player_id"] == 2059, "tov"].values[0] == 3
+    assert stats_df.loc[stats_df["player_id"] == 1510, "tov"].values[0] == 1
+    assert stats_df.loc[stats_df["player_id"] == 2546, "tov"].values[0] == 4
+
+
+def test_foul_calc_player(setup):
+    """
+    testing to make sure personal foul calculations are correct
+    """
+    pbp = setup
+
+    fouls = pbp._foul_calc_player()
+    stats_df = pbp._point_calc_player()
+
+    stats_df = stats_df.merge(
+        fouls, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+    )
+    stats_df["pf"] = stats_df["pf"].fillna(0).astype(int)
+
+    assert stats_df.loc[stats_df["player_id"] == 1894, "pf"].values[0] == 4
+    assert stats_df.loc[stats_df["player_id"] == 947, "pf"].values[0] == 0
+    assert stats_df.loc[stats_df["player_id"] == 948, "pf"].values[0] == 4
+    assert stats_df.loc[stats_df["player_id"] == 2549, "pf"].values[0] == 5
+    assert stats_df.loc[stats_df["player_id"] == 2059, "pf"].values[0] == 5
+    assert stats_df.loc[stats_df["player_id"] == 1510, "pf"].values[0] == 5
+    assert stats_df.loc[stats_df["player_id"] == 2546, "pf"].values[0] == 4
