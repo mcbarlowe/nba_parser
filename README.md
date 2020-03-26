@@ -15,7 +15,7 @@ lines of code.
 
 ```python
 import nba_scraper.nba_scraper as ns
-import nba_parser.nba_parser npsr
+import nba_parser.nba_parser as npsr
 
 game_df = ns.scrape_game([20700233])
 pbp = PbP(game_df)
