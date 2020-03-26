@@ -225,8 +225,655 @@ class PbP:
 
         return blocks
 
-    def __plus_minus_player(self):
-        pass
+    def _plus_minus_calc_player(self):
+
+        self.df["home_plus"] = np.where(
+            self.df["event_team"] == self.df["home_team_abbrev"],
+            self.df["points_made"],
+            0,
+        )
+        self.df["home_minus"] = np.where(
+            self.df["event_team"] != self.df["home_team_abbrev"],
+            self.df["points_made"],
+            0,
+        )
+        self.df["away_plus"] = np.where(
+            self.df["event_team"] != self.df["home_team_abbrev"],
+            self.df["points_made"],
+            0,
+        )
+        self.df["away_minus"] = np.where(
+            self.df["event_team"] == self.df["home_team_abbrev"],
+            self.df["points_made"],
+            0,
+        )
+
+        no_ft_df = self.df[self.df["event_type_de"] != "free-throw"].copy()
+
+        home_player_1 = (
+            no_ft_df.groupby(
+                ["home_player_1_id", "game_id", "game_date", "home_team_id"]
+            )[["home_plus", "home_minus"]]
+            .sum()
+            .reset_index()
+        )
+        home_player_1.rename(
+            columns={
+                "home_player_1_id": "player_id",
+                "home_team_id": "team_id",
+                "home_plus": "plus",
+                "home_minus": "minus",
+            },
+            inplace=True,
+        )
+        home_player_2 = (
+            no_ft_df.groupby(
+                ["home_player_2_id", "game_id", "game_date", "home_team_id"]
+            )[["home_plus", "home_minus"]]
+            .sum()
+            .reset_index()
+        )
+        home_player_2.rename(
+            columns={
+                "home_player_2_id": "player_id",
+                "home_team_id": "team_id",
+                "home_plus": "plus",
+                "home_minus": "minus",
+            },
+            inplace=True,
+        )
+        home_player_3 = (
+            no_ft_df.groupby(
+                ["home_player_3_id", "game_id", "game_date", "home_team_id"]
+            )[["home_plus", "home_minus"]]
+            .sum()
+            .reset_index()
+        )
+        home_player_3.rename(
+            columns={
+                "home_player_3_id": "player_id",
+                "home_team_id": "team_id",
+                "home_plus": "plus",
+                "home_minus": "minus",
+            },
+            inplace=True,
+        )
+        home_player_4 = (
+            no_ft_df.groupby(
+                ["home_player_4_id", "game_id", "game_date", "home_team_id"]
+            )[["home_plus", "home_minus"]]
+            .sum()
+            .reset_index()
+        )
+        home_player_4.rename(
+            columns={
+                "home_player_4_id": "player_id",
+                "home_team_id": "team_id",
+                "home_plus": "plus",
+                "home_minus": "minus",
+            },
+            inplace=True,
+        )
+        home_player_5 = (
+            no_ft_df.groupby(
+                ["home_player_5_id", "game_id", "game_date", "home_team_id"]
+            )[["home_plus", "home_minus"]]
+            .sum()
+            .reset_index()
+        )
+        home_player_5.rename(
+            columns={
+                "home_player_5_id": "player_id",
+                "home_team_id": "team_id",
+                "home_plus": "plus",
+                "home_minus": "minus",
+            },
+            inplace=True,
+        )
+
+        away_player_1 = (
+            no_ft_df.groupby(
+                ["away_player_1_id", "game_id", "game_date", "away_team_id"]
+            )[["away_plus", "away_minus"]]
+            .sum()
+            .reset_index()
+        )
+        away_player_1.rename(
+            columns={
+                "away_player_1_id": "player_id",
+                "away_team_id": "team_id",
+                "away_plus": "plus",
+                "away_minus": "minus",
+            },
+            inplace=True,
+        )
+        away_player_2 = (
+            no_ft_df.groupby(
+                ["away_player_2_id", "game_id", "game_date", "away_team_id"]
+            )[["away_plus", "away_minus"]]
+            .sum()
+            .reset_index()
+        )
+        away_player_2.rename(
+            columns={
+                "away_player_2_id": "player_id",
+                "away_team_id": "team_id",
+                "away_plus": "plus",
+                "away_minus": "minus",
+            },
+            inplace=True,
+        )
+        away_player_3 = (
+            no_ft_df.groupby(
+                ["away_player_3_id", "game_id", "game_date", "away_team_id"]
+            )[["away_plus", "away_minus"]]
+            .sum()
+            .reset_index()
+        )
+        away_player_3.rename(
+            columns={
+                "away_player_3_id": "player_id",
+                "away_team_id": "team_id",
+                "away_plus": "plus",
+                "away_minus": "minus",
+            },
+            inplace=True,
+        )
+        away_player_4 = (
+            no_ft_df.groupby(
+                ["away_player_4_id", "game_id", "game_date", "away_team_id"]
+            )[["away_plus", "away_minus"]]
+            .sum()
+            .reset_index()
+        )
+        away_player_4.rename(
+            columns={
+                "away_player_4_id": "player_id",
+                "away_team_id": "team_id",
+                "away_plus": "plus",
+                "away_minus": "minus",
+            },
+            inplace=True,
+        )
+        away_player_5 = (
+            no_ft_df.groupby(
+                ["away_player_5_id", "game_id", "game_date", "away_team_id"]
+            )[["away_plus", "away_minus"]]
+            .sum()
+            .reset_index()
+        )
+        away_player_5.rename(
+            columns={
+                "away_player_5_id": "player_id",
+                "away_team_id": "team_id",
+                "away_plus": "plus",
+                "away_minus": "minus",
+            },
+            inplace=True,
+        )
+
+        home_plus_minus_total = pd.concat(
+            [home_player_1, home_player_2, home_player_3, home_player_4, home_player_5,]
+        )
+        away_plus_minus_total = pd.concat(
+            [away_player_1, away_player_2, away_player_3, away_player_4, away_player_5,]
+        )
+
+        home_plus_minus = (
+            home_plus_minus_total.groupby(
+                ["player_id", "game_id", "game_date", "team_id"]
+            )[["plus", "minus"]]
+            .sum()
+            .reset_index()
+        )
+
+        away_plus_minus = (
+            away_plus_minus_total.groupby(
+                ["player_id", "game_id", "game_date", "team_id"]
+            )[["plus", "minus"]]
+            .sum()
+            .reset_index()
+        )
+
+        plus_minus = pd.concat([home_plus_minus, away_plus_minus])
+
+        # calculating plus minus for free throw events
+        foul_df = self.df[self.df["event_type_de"] == "foul"][
+            [
+                "period",
+                "seconds_elapsed",
+                "pctimestring",
+                "home_player_1_id",
+                "home_player_2_id",
+                "home_player_3_id",
+                "home_player_4_id",
+                "home_player_5_id",
+                "away_player_1_id",
+                "away_player_2_id",
+                "away_player_3_id",
+                "away_player_4_id",
+                "away_player_5_id",
+            ]
+        ].copy()
+
+        ft_df = self.df[self.df["event_type_de"] == "free-throw"][
+            [
+                "period",
+                "seconds_elapsed",
+                "pctimestring",
+                "game_id",
+                "game_date",
+                "home_team_id",
+                "away_team_id",
+                "home_plus",
+                "home_minus",
+                "away_plus",
+                "away_minus",
+            ]
+        ]
+
+        ft_df = ft_df.merge(foul_df, on=["period", "seconds_elapsed", "pctimestring"])
+
+        home_player_1 = (
+            ft_df.groupby(["home_player_1_id", "game_id", "game_date", "home_team_id"])[
+                ["home_plus", "home_minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+
+        home_player_1.rename(
+            columns={
+                "home_player_1_id": "player_id",
+                "home_team_id": "team_id",
+                "home_plus": "plus",
+                "home_minus": "minus",
+            },
+            inplace=True,
+        )
+
+        home_player_2 = (
+            ft_df.groupby(["home_player_2_id", "game_id", "game_date", "home_team_id"])[
+                ["home_plus", "home_minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+
+        home_player_2.rename(
+            columns={
+                "home_player_2_id": "player_id",
+                "home_team_id": "team_id",
+                "home_plus": "plus",
+                "home_minus": "minus",
+            },
+            inplace=True,
+        )
+        home_player_3 = (
+            ft_df.groupby(["home_player_3_id", "game_id", "game_date", "home_team_id"])[
+                ["home_plus", "home_minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+        home_player_3.rename(
+            columns={
+                "home_player_3_id": "player_id",
+                "home_team_id": "team_id",
+                "home_plus": "plus",
+                "home_minus": "minus",
+            },
+            inplace=True,
+        )
+        home_player_4 = (
+            ft_df.groupby(["home_player_4_id", "game_id", "game_date", "home_team_id"])[
+                ["home_plus", "home_minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+        home_player_4.rename(
+            columns={
+                "home_player_4_id": "player_id",
+                "home_team_id": "team_id",
+                "home_plus": "plus",
+                "home_minus": "minus",
+            },
+            inplace=True,
+        )
+        home_player_5 = (
+            ft_df.groupby(["home_player_5_id", "game_id", "game_date", "home_team_id"])[
+                ["home_plus", "home_minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+        home_player_5.rename(
+            columns={
+                "home_player_5_id": "player_id",
+                "home_team_id": "team_id",
+                "home_plus": "plus",
+                "home_minus": "minus",
+            },
+            inplace=True,
+        )
+
+        away_player_1 = (
+            ft_df.groupby(["away_player_1_id", "game_id", "game_date", "away_team_id"])[
+                ["away_plus", "away_minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+        away_player_1.rename(
+            columns={
+                "away_player_1_id": "player_id",
+                "away_team_id": "team_id",
+                "away_plus": "plus",
+                "away_minus": "minus",
+            },
+            inplace=True,
+        )
+        away_player_2 = (
+            ft_df.groupby(["away_player_2_id", "game_id", "game_date", "away_team_id"])[
+                ["away_plus", "away_minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+        away_player_2.rename(
+            columns={
+                "away_player_2_id": "player_id",
+                "away_team_id": "team_id",
+                "away_plus": "plus",
+                "away_minus": "minus",
+            },
+            inplace=True,
+        )
+        away_player_3 = (
+            ft_df.groupby(["away_player_3_id", "game_id", "game_date", "away_team_id"])[
+                ["away_plus", "away_minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+        away_player_3.rename(
+            columns={
+                "away_player_3_id": "player_id",
+                "away_team_id": "team_id",
+                "away_plus": "plus",
+                "away_minus": "minus",
+            },
+            inplace=True,
+        )
+        away_player_4 = (
+            ft_df.groupby(["away_player_4_id", "game_id", "game_date", "away_team_id"])[
+                ["away_plus", "away_minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+        away_player_4.rename(
+            columns={
+                "away_player_4_id": "player_id",
+                "away_team_id": "team_id",
+                "away_plus": "plus",
+                "away_minus": "minus",
+            },
+            inplace=True,
+        )
+        away_player_5 = (
+            ft_df.groupby(["away_player_5_id", "game_id", "game_date", "away_team_id"])[
+                ["away_plus", "away_minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+        away_player_5.rename(
+            columns={
+                "away_player_5_id": "player_id",
+                "away_team_id": "team_id",
+                "away_plus": "plus",
+                "away_minus": "minus",
+            },
+            inplace=True,
+        )
+
+        home_ft_plus_minus_total = pd.concat(
+            [home_player_1, home_player_2, home_player_3, home_player_4, home_player_5,]
+        )
+        away_ft_plus_minus_total = pd.concat(
+            [away_player_1, away_player_2, away_player_3, away_player_4, away_player_5,]
+        )
+
+        home_plus_minus_ft = (
+            home_ft_plus_minus_total.groupby(
+                ["player_id", "game_id", "game_date", "team_id"]
+            )[["plus", "minus"]]
+            .sum()
+            .reset_index()
+        )
+
+        away_plus_minus_ft = (
+            away_ft_plus_minus_total.groupby(
+                ["player_id", "game_id", "game_date", "team_id"]
+            )[["plus", "minus"]]
+            .sum()
+            .reset_index()
+        )
+
+        ft_plus_minus = pd.concat([home_plus_minus_ft, away_plus_minus_ft])
+
+        # combining free-throw and non free-throw plus minus dataframes into one
+        total_plus_minus = pd.concat([ft_plus_minus, plus_minus])
+        total_plus_minus = (
+            total_plus_minus.groupby(["player_id", "game_id", "game_date", "team_id"])[
+                ["plus", "minus"]
+            ]
+            .sum()
+            .reset_index()
+        )
+        total_plus_minus["plus_minus"] = (
+            total_plus_minus["plus"] - total_plus_minus["minus"]
+        )
+
+        total_plus_minus["game_date"] = pd.to_datetime(total_plus_minus["game_date"])
+        return total_plus_minus
+
+    def _toc_calc_player(self):
+        """
+        this method calculates a players time in the game and converts it to
+        a time string of MM:SS as well
+        """
+
+        # home players time on court (toc) calculations
+        home_player_1 = (
+            self.df.groupby(
+                ["home_player_1_id", "game_id", "game_date", "home_team_id"]
+            )[["event_length"]]
+            .sum()
+            .reset_index()
+        )
+        home_player_1.rename(
+            columns={
+                "home_player_1_id": "player_id",
+                "home_team_id": "team_id",
+                "event_length": "toc",
+            },
+            inplace=True,
+        )
+        home_player_2 = (
+            self.df.groupby(
+                ["home_player_2_id", "game_id", "game_date", "home_team_id"]
+            )[["event_length"]]
+            .sum()
+            .reset_index()
+        )
+        home_player_2.rename(
+            columns={
+                "home_player_2_id": "player_id",
+                "home_team_id": "team_id",
+                "event_length": "toc",
+            },
+            inplace=True,
+        )
+        home_player_3 = (
+            self.df.groupby(
+                ["home_player_3_id", "game_id", "game_date", "home_team_id"]
+            )[["event_length"]]
+            .sum()
+            .reset_index()
+        )
+        home_player_3.rename(
+            columns={
+                "home_player_3_id": "player_id",
+                "home_team_id": "team_id",
+                "event_length": "toc",
+            },
+            inplace=True,
+        )
+        home_player_4 = (
+            self.df.groupby(
+                ["home_player_4_id", "game_id", "game_date", "home_team_id"]
+            )[["event_length"]]
+            .sum()
+            .reset_index()
+        )
+        home_player_4.rename(
+            columns={
+                "home_player_4_id": "player_id",
+                "home_team_id": "team_id",
+                "event_length": "toc",
+            },
+            inplace=True,
+        )
+        home_player_5 = (
+            self.df.groupby(
+                ["home_player_5_id", "game_id", "game_date", "home_team_id"]
+            )[["event_length"]]
+            .sum()
+            .reset_index()
+        )
+        home_player_5.rename(
+            columns={
+                "home_player_5_id": "player_id",
+                "home_team_id": "team_id",
+                "event_length": "toc",
+            },
+            inplace=True,
+        )
+
+        home_players_toc = pd.concat(
+            [home_player_1, home_player_2, home_player_3, home_player_4, home_player_5]
+        )
+        home_players_toc = (
+            home_players_toc.groupby(["player_id", "team_id", "game_id", "game_date"])[
+                ["toc"]
+            ]
+            .sum()
+            .reset_index()
+        )
+
+        home_players_toc["toc_string"] = pd.to_datetime(
+            home_players_toc["toc"], unit="s"
+        ).dt.strftime("%M:%S")
+
+        # away players time on court (toc) calculations
+        away_player_1 = (
+            self.df.groupby(
+                ["away_player_1_id", "game_id", "game_date", "away_team_id"]
+            )[["event_length"]]
+            .sum()
+            .reset_index()
+        )
+
+        away_player_1.rename(
+            columns={
+                "away_player_1_id": "player_id",
+                "away_team_id": "team_id",
+                "event_length": "toc",
+            },
+            inplace=True,
+        )
+        away_player_2 = (
+            self.df.groupby(
+                ["away_player_2_id", "game_id", "game_date", "away_team_id"]
+            )[["event_length"]]
+            .sum()
+            .reset_index()
+        )
+        away_player_2.rename(
+            columns={
+                "away_player_2_id": "player_id",
+                "away_team_id": "team_id",
+                "event_length": "toc",
+            },
+            inplace=True,
+        )
+        away_player_3 = (
+            self.df.groupby(
+                ["away_player_3_id", "game_id", "game_date", "away_team_id"]
+            )[["event_length"]]
+            .sum()
+            .reset_index()
+        )
+        away_player_3.rename(
+            columns={
+                "away_player_3_id": "player_id",
+                "away_team_id": "team_id",
+                "event_length": "toc",
+            },
+            inplace=True,
+        )
+        away_player_4 = (
+            self.df.groupby(
+                ["away_player_4_id", "game_id", "game_date", "away_team_id"]
+            )[["event_length"]]
+            .sum()
+            .reset_index()
+        )
+        away_player_4.rename(
+            columns={
+                "away_player_4_id": "player_id",
+                "away_team_id": "team_id",
+                "event_length": "toc",
+            },
+            inplace=True,
+        )
+        away_player_5 = (
+            self.df.groupby(
+                ["away_player_5_id", "game_id", "game_date", "away_team_id"]
+            )[["event_length"]]
+            .sum()
+            .reset_index()
+        )
+        away_player_5.rename(
+            columns={
+                "away_player_5_id": "player_id",
+                "away_team_id": "team_id",
+                "event_length": "toc",
+            },
+            inplace=True,
+        )
+
+        away_players_toc = pd.concat(
+            [away_player_1, away_player_2, away_player_3, away_player_4, away_player_5]
+        )
+        away_players_toc = (
+            away_players_toc.groupby(["player_id", "team_id", "game_id", "game_date"])[
+                ["toc"]
+            ]
+            .sum()
+            .reset_index()
+        )
+
+        away_players_toc["toc_string"] = pd.to_datetime(
+            away_players_toc["toc"], unit="s"
+        ).dt.strftime("%M:%S")
+
+        total_toc = pd.concat([home_players_toc, away_players_toc])
+
+        return total_toc
 
     def __point_calc_team(self):
         pass

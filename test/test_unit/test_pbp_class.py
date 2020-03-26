@@ -206,3 +206,39 @@ def test_foul_calc_player(setup):
     assert stats_df.loc[stats_df["player_id"] == 2059, "pf"].values[0] == 5
     assert stats_df.loc[stats_df["player_id"] == 1510, "pf"].values[0] == 5
     assert stats_df.loc[stats_df["player_id"] == 2546, "pf"].values[0] == 4
+
+
+def test_plus_minus_calc_player(setup):
+    """
+    testing to make sure personal foul calculations are correct
+    """
+    pbp = setup
+
+    plus_minus = pbp._plus_minus_calc_player()
+    stats_df = pbp._point_calc_player()
+
+    stats_df = stats_df.merge(
+        plus_minus, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+    )
+    stats_df["plus_minus"] = stats_df["plus_minus"].fillna(0).astype(int)
+
+    assert stats_df.loc[stats_df["player_id"] == 1894, "plus_minus"].values[0] == -8
+    assert stats_df.loc[stats_df["player_id"] == 947, "plus_minus"].values[0] == 16
+    assert stats_df.loc[stats_df["player_id"] == 948, "plus_minus"].values[0] == 18
+    assert stats_df.loc[stats_df["player_id"] == 2549, "plus_minus"].values[0] == -9
+    assert stats_df.loc[stats_df["player_id"] == 2059, "plus_minus"].values[0] == 6
+    assert stats_df.loc[stats_df["player_id"] == 1510, "plus_minus"].values[0] == -12
+    assert stats_df.loc[stats_df["player_id"] == 2546, "plus_minus"].values[0] == 14
+
+
+def test_toc_calc_player(setup):
+
+    pbp = setup
+
+    toc = pbp._toc_calc_player()
+
+    assert toc.loc[toc['player_id'] == 1894, 'toc'].values[0] == 2307
+    assert toc.loc[toc['player_id'] == 947, 'toc'].values[0] == 2452
+    assert toc.loc[toc['player_id'] == 1894, 'toc_string'].values[0] == '38:27'
+    assert toc.loc[toc['player_id'] == 947, 'toc_string'].values[0] == '40:52'
+
