@@ -17,8 +17,18 @@ class PbP:
         self.away_team = pbp_df["away_team_abbrev"].unique()[0]
         self.home_team_id = pbp_df["home_team_id"].unique()[0]
         self.away_team_id = pbp_df["away_team_id"].unique()[0]
-        self.game_date = datetime.strptime(pbp_df["game_date"].unique()[0], "%Y-%m-%d")
         self.season = pbp_df["season"].unique()[0]
+
+        # done to handle PbP classes created from imported csv files versus
+        # those that are created by nba_scraper that handles game_date as a
+        # proper datetime dtype
+        if self.df["game_date"].dtypes == "O":
+            self.game_date = datetime.strptime(
+                pbp_df["game_date"].unique()[0], "%Y-%m-%d"
+            )
+            self.df["game_date"] = pd.to_datetime(self.df["game_date"])
+        else:
+            self.game_date = pbp_df["game_date"].unique()[0]
 
     def _point_calc_player(self):
         """
@@ -55,7 +65,6 @@ class PbP:
         player_points_df["player1_team_id"] = player_points_df[
             "player1_team_id"
         ].astype(int)
-        player_points_df["game_date"] = pd.to_datetime(player_points_df["game_date"])
         player_points_df.rename(
             columns={"player1_id": "player_id", "player1_team_id": "team_id"},
             inplace=True,
@@ -79,7 +88,6 @@ class PbP:
             .reset_index()
         )
 
-        assists["game_date"] = pd.to_datetime(assists["game_date"])
         assists["player2_team_id"] = assists["player2_team_id"].astype(int)
         assists.rename(
             columns={
@@ -104,7 +112,6 @@ class PbP:
             .reset_index()
         )
 
-        rebounds["game_date"] = pd.to_datetime(rebounds["game_date"])
         rebounds["player1_team_id"] = rebounds["player1_team_id"].astype(int)
         rebounds.rename(
             columns={
@@ -130,7 +137,6 @@ class PbP:
             .reset_index()
         )
 
-        turnovers["game_date"] = pd.to_datetime(turnovers["game_date"])
         turnovers["player1_team_id"] = turnovers["player1_team_id"].astype(int)
         turnovers.rename(
             columns={
@@ -162,7 +168,6 @@ class PbP:
             .count()
             .reset_index()
         )
-        fouls["game_date"] = pd.to_datetime(fouls["game_date"])
         fouls["player1_team_id"] = fouls["player1_team_id"].astype(int)
         fouls.rename(
             columns={
@@ -187,7 +192,6 @@ class PbP:
             .reset_index()
         )
 
-        steals["game_date"] = pd.to_datetime(steals["game_date"])
         steals["player2_team_id"] = steals["player2_team_id"].astype(int)
         steals.rename(
             columns={
@@ -212,7 +216,6 @@ class PbP:
             .sum()
             .reset_index()
         )
-        blocks["game_date"] = pd.to_datetime(blocks["game_date"])
         blocks["player3_team_id"] = blocks["player3_team_id"].astype(int)
         blocks.rename(
             columns={
@@ -677,7 +680,6 @@ class PbP:
             total_plus_minus["plus"] - total_plus_minus["minus"]
         )
 
-        total_plus_minus["game_date"] = pd.to_datetime(total_plus_minus["game_date"])
         return total_plus_minus
 
     def _toc_calc_player(self):
@@ -906,13 +908,53 @@ class PbP:
         """
         points = self._point_calc_player()
         blocks = self._block_calc_player()
+        assists = self._assist_calc_player()
+        rebounds = self._rebound_calc_player()
+        turnovers = self._turnover_calc_player()
+        fouls = self._foul_calc_player()
+        steals = self._steal_calc_player()
+        plus_minus = self._plus_minus_calc_player()
+        toc = self._toc_calc_player()
 
-        playerbygamestats = points.merge(
+        pbg = toc.merge(
+            points, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+        )
+        pbg = pbg.merge(
             blocks, how="left", on=["player_id", "team_id", "game_date", "game_id"]
         )
-        playerbygamestats["blk"] = playerbygamestats["blk"].fillna(0).astype(int)
+        pbg = pbg.merge(
+            assists, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+        )
+        pbg = pbg.merge(
+            rebounds, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+        )
+        pbg = pbg.merge(
+            turnovers, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+        )
+        pbg = pbg.merge(
+            fouls, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+        )
+        pbg = pbg.merge(
+            steals, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+        )
+        pbg = pbg.merge(
+            plus_minus, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+        )
+        pbg["blk"] = pbg["blk"].fillna(0).astype(int)
+        pbg["ast"] = pbg["ast"].fillna(0).astype(int)
+        pbg["dreb"] = pbg["dreb"].fillna(0).astype(int)
+        pbg["oreb"] = pbg["oreb"].fillna(0).astype(int)
+        pbg["tov"] = pbg["tov"].fillna(0).astype(int)
+        pbg["pf"] = pbg["pf"].fillna(0).astype(int)
+        pbg["stl"] = pbg["stl"].fillna(0).astype(int)
+        pbg["fgm"] = pbg["fgm"].fillna(0).astype(int)
+        pbg["fga"] = pbg["fga"].fillna(0).astype(int)
+        pbg["tpm"] = pbg["tpm"].fillna(0).astype(int)
+        pbg["tpa"] = pbg["tpa"].fillna(0).astype(int)
+        pbg["ftm"] = pbg["ftm"].fillna(0).astype(int)
+        pbg["fta"] = pbg["fta"].fillna(0).astype(int)
 
-        return playerbygamestats
+        return pbg
 
     def teambygamestats(self):
         pass

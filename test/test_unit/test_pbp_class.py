@@ -232,13 +232,87 @@ def test_plus_minus_calc_player(setup):
 
 
 def test_toc_calc_player(setup):
+    """
+    testing time on court calculations
+    """
 
     pbp = setup
 
     toc = pbp._toc_calc_player()
 
-    assert toc.loc[toc['player_id'] == 1894, 'toc'].values[0] == 2307
-    assert toc.loc[toc['player_id'] == 947, 'toc'].values[0] == 2452
-    assert toc.loc[toc['player_id'] == 1894, 'toc_string'].values[0] == '38:27'
-    assert toc.loc[toc['player_id'] == 947, 'toc_string'].values[0] == '40:52'
+    assert toc.loc[toc["player_id"] == 1894, "toc"].values[0] == 2307
+    assert toc.loc[toc["player_id"] == 947, "toc"].values[0] == 2452
+    assert toc.loc[toc["player_id"] == 1894, "toc_string"].values[0] == "38:27"
+    assert toc.loc[toc["player_id"] == 947, "toc_string"].values[0] == "40:52"
 
+
+def test_playerbygamestats(setup):
+
+    pbp = setup
+
+    pbg = pbp.playerbygamestats()
+
+    assert pbg.loc[pbg["player_id"] == 1894, "toc"].values[0] == 2307
+    assert pbg.loc[pbg["player_id"] == 947, "toc"].values[0] == 2452
+    assert pbg.loc[pbg["player_id"] == 1894, "toc_string"].values[0] == "38:27"
+    assert pbg.loc[pbg["player_id"] == 947, "toc_string"].values[0] == "40:52"
+    assert pbg.loc[pbg["player_id"] == 1894, "plus_minus"].values[0] == -8
+    assert pbg.loc[pbg["player_id"] == 947, "plus_minus"].values[0] == 16
+    assert pbg.loc[pbg["player_id"] == 948, "plus_minus"].values[0] == 18
+    assert pbg.loc[pbg["player_id"] == 2549, "plus_minus"].values[0] == -9
+    assert pbg.loc[pbg["player_id"] == 2059, "plus_minus"].values[0] == 6
+    assert pbg.loc[pbg["player_id"] == 1510, "plus_minus"].values[0] == -12
+    assert pbg.loc[pbg["player_id"] == 2546, "plus_minus"].values[0] == 14
+    assert pbg.loc[pbg["player_id"] == 1894, "pf"].values[0] == 4
+    assert pbg.loc[pbg["player_id"] == 947, "pf"].values[0] == 0
+    assert pbg.loc[pbg["player_id"] == 948, "pf"].values[0] == 4
+    assert pbg.loc[pbg["player_id"] == 2549, "pf"].values[0] == 5
+    assert pbg.loc[pbg["player_id"] == 2059, "pf"].values[0] == 5
+    assert pbg.loc[pbg["player_id"] == 1510, "pf"].values[0] == 5
+    assert pbg.loc[pbg["player_id"] == 2546, "pf"].values[0] == 4
+    assert pbg.loc[pbg["player_id"] == 1894, "tov"].values[0] == 6
+    assert pbg.loc[pbg["player_id"] == 947, "tov"].values[0] == 4
+    assert pbg.loc[pbg["player_id"] == 948, "tov"].values[0] == 1
+    assert pbg.loc[pbg["player_id"] == 2549, "tov"].values[0] == 4
+    assert pbg.loc[pbg["player_id"] == 2059, "tov"].values[0] == 3
+    assert pbg.loc[pbg["player_id"] == 1510, "tov"].values[0] == 1
+    assert pbg.loc[pbg["player_id"] == 2546, "tov"].values[0] == 4
+    assert pbg.loc[pbg["player_id"] == 1894, "stl"].values[0] == 2
+    assert pbg.loc[pbg["player_id"] == 947, "stl"].values[0] == 0
+    assert pbg.loc[pbg["player_id"] == 948, "stl"].values[0] == 0
+    assert pbg.loc[pbg["player_id"] == 2549, "stl"].values[0] == 0
+    assert pbg.loc[pbg["player_id"] == 2059, "stl"].values[0] == 0
+    assert pbg.loc[pbg["player_id"] == 1510, "stl"].values[0] == 2
+    assert pbg.loc[pbg["player_id"] == 2546, "stl"].values[0] == 3
+    assert pbg.loc[pbg["player_id"] == 1894, "dreb"].values[0] == 2
+    assert pbg.loc[pbg["player_id"] == 947, "dreb"].values[0] == 3
+    assert pbg.loc[pbg["player_id"] == 948, "dreb"].values[0] == 8
+    assert pbg.loc[pbg["player_id"] == 2549, "dreb"].values[0] == 6
+    assert pbg.loc[pbg["player_id"] == 2059, "dreb"].values[0] == 4
+    assert pbg.loc[pbg["player_id"] == 1894, "oreb"].values[0] == 2
+    assert pbg.loc[pbg["player_id"] == 947, "oreb"].values[0] == 0
+    assert pbg.loc[pbg["player_id"] == 948, "oreb"].values[0] == 4
+    assert pbg.loc[pbg["player_id"] == 2549, "oreb"].values[0] == 3
+    assert pbg.loc[pbg["player_id"] == 2059, "oreb"].values[0] == 2
+    assert pbg.loc[pbg["player_id"] == 1894, "ast"].values[0] == 5
+    assert pbg.loc[pbg["player_id"] == 947, "ast"].values[0] == 7
+    assert pbg.loc[pbg["player_id"] == 948, "ast"].values[0] == 3
+    assert pbg.loc[pbg["player_id"] == 2549, "ast"].values[0] == 0
+    assert pbg.loc[pbg["player_id"] == 2059, "ast"].values[0] == 3
+    assert pbg.loc[pbg["player_id"] == 1894, "blk"].values[0] == 0
+    assert pbg.loc[pbg["player_id"] == 947, "blk"].values[0] == 0
+    assert pbg.loc[pbg["player_id"] == 948, "blk"].values[0] == 1
+    assert pbg.loc[pbg["player_id"] == 2549, "blk"].values[0] == 3
+    assert pbg.loc[pbg["player_id"] == 2059, "blk"].values[0] == 1
+    assert pbg.loc[pbg["player_id"] == 1894, "fgm"].values[0] == 10
+    assert pbg.loc[pbg["player_id"] == 1894, "fga"].values[0] == 20
+    assert pbg.loc[pbg["player_id"] == 1894, "tpm"].values[0] == 1
+    assert pbg.loc[pbg["player_id"] == 1894, "tpa"].values[0] == 2
+    assert pbg.loc[pbg["player_id"] == 1894, "ftm"].values[0] == 5
+    assert pbg.loc[pbg["player_id"] == 1894, "fta"].values[0] == 6
+    assert pbg.loc[pbg["player_id"] == 947, "fgm"].values[0] == 11
+    assert pbg.loc[pbg["player_id"] == 947, "fga"].values[0] == 26
+    assert pbg.loc[pbg["player_id"] == 947, "tpm"].values[0] == 0
+    assert pbg.loc[pbg["player_id"] == 947, "tpa"].values[0] == 2
+    assert pbg.loc[pbg["player_id"] == 947, "ftm"].values[0] == 4
+    assert pbg.loc[pbg["player_id"] == 947, "fta"].values[0] == 6
