@@ -1,4 +1,5 @@
 from datetime import datetime
+import math
 import numpy as np
 import pandas as pd
 
@@ -1204,14 +1205,13 @@ class PbP:
         return assists_df
 
     def _rebound_calc_team(self):
-        '''
+        """
         method to calculate team offensive and deffensive rebound totals
-        '''
+        """
         rebounds_df = (
-            self.df.groupby(["player1_team_id", "game_id"])[[
-                "is_d_rebound",
-                "is_o_rebound",
-            ]]
+            self.df.groupby(["player1_team_id", "game_id"])[
+                ["is_d_rebound", "is_o_rebound",]
+            ]
             .sum()
             .reset_index()
         )
@@ -1227,20 +1227,121 @@ class PbP:
 
         return rebounds_df
 
-    def __turnover_calc_team(self):
-        pass
+    def _turnover_calc_team(self):
+        turnovers_df = (
+            self.df.groupby(["player1_team_id", "game_id"])[["is_turnover"]]
+            .sum()
+            .reset_index()
+        )
+        turnovers_df["player1_team_id"] = turnovers_df["player1_team_id"].astype(int)
+        turnovers_df.rename(
+            columns={"player1_team_id": "team_id", "is_turnover": "tov",}, inplace=True,
+        )
 
-    def __foul_calc_team(self):
-        pass
+        return turnovers_df
 
-    def __steal_calc_team(self):
-        pass
+    def _foul_calc_team(self):
+        """
+        method to calculate team personal fouls taken in a game
+        """
 
-    def __block_calc_team(self):
-        pass
+        fouls = self.df[
+            (self.df["event_type_de"] == "foul")
+            & (
+                self.df["eventmsgactiontype"].isin(
+                    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15, 26, 27, 28]
+                )
+            )
+        ]
+        fouls = (
+            fouls.groupby(["game_id", "player1_team_id"])["eventnum"]
+            .count()
+            .reset_index()
+        )
+        fouls["player1_team_id"] = fouls["player1_team_id"].astype(int)
+        fouls.rename(
+            columns={"player1_team_id": "team_id", "eventnum": "pf",}, inplace=True,
+        )
 
-    def __plus_minus_team(self):
-        pass
+        fouls = fouls.merge(fouls, on="game_id", suffixes=["", "_opponent"])
+
+        fouls = fouls[fouls["team_id"] != fouls["team_id_opponent"]]
+        fouls.rename(
+            columns={"pf_opponent": "fouls_drawn",}, inplace=True,
+        )
+
+        return fouls[["team_id", "game_id", "pf", "fouls_drawn"]]
+
+    def _steal_calc_team(self):
+        """
+        method to calculate team steals in a game
+        """
+
+        steals_df = (
+            self.df.groupby(["player2_team_id", "game_id"])[["is_steal"]]
+            .sum()
+            .reset_index()
+        )
+        steals_df["player2_team_id"] = steals_df["player2_team_id"].astype(int)
+        steals_df.rename(
+            columns={"player2_team_id": "team_id", "is_steal": "stl",}, inplace=True,
+        )
+
+        return steals_df
+
+    def _block_calc_team(self):
+        """
+        method to calculate team blocks
+        """
+        blocks_df = (
+            self.df.groupby(["player3_team_id", "game_id"])[["is_block"]]
+            .sum()
+            .reset_index()
+        )
+        blocks_df["player3_team_id"] = blocks_df["player3_team_id"].astype(int)
+        blocks_df.rename(
+            columns={"player3_team_id": "team_id", "is_block": "blk",}, inplace=True,
+        )
+
+        blocks_df = blocks_df.merge(blocks_df, on="game_id", suffixes=["", "_opponent"])
+
+        blocks_df = blocks_df[blocks_df["team_id"] != blocks_df["team_id_opponent"]]
+        blocks_df.rename(
+            columns={"blk_opponent": "shots_blocked",}, inplace=True,
+        )
+
+        return blocks_df[["team_id", "game_id", "blk", "shots_blocked"]]
+
+    def _plus_minus_team(self):
+        """
+        method to calculate team score differential
+        """
+        plus_minus_df = (
+            self.df.groupby(["player1_team_id", "game_id"])[["points_made",]]
+            .sum()
+            .reset_index()
+        )
+        plus_minus_df["player1_team_id"] = plus_minus_df["player1_team_id"].astype(int)
+        plus_minus_df.rename(
+            columns={"player1_team_id": "team_id", "points_made": "points_for",},
+            inplace=True,
+        )
+        plus_minus_df = plus_minus_df.merge(
+            plus_minus_df, on="game_id", suffixes=["", "_opponent"]
+        )
+
+        plus_minus_df = plus_minus_df[
+            plus_minus_df["team_id"] != plus_minus_df["team_id_opponent"]
+        ]
+
+        plus_minus_df["plus_minus"] = (
+            plus_minus_df["points_for"] - plus_minus_df["points_for_opponent"]
+        )
+        plus_minus_df.rename(
+            columns={"points_for_opponent": "points_against",}, inplace=True,
+        )
+
+        return plus_minus_df[["team_id", "game_id", "points_against", "plus_minus"]]
 
     def playerbygamestats(self):
         """
@@ -1300,4 +1401,38 @@ class PbP:
         return pbg
 
     def teambygamestats(self):
-        pass
+        """
+        main team stats calc hook
+        """
+
+        points = self._point_calc_team()
+        blocks = self._block_calc_team()
+        assists = self._assist_calc_team()
+        rebounds = self._rebound_calc_team()
+        turnovers = self._turnover_calc_team()
+        fouls = self._foul_calc_team()
+        steals = self._steal_calc_team()
+        plus_minus = self._plus_minus_team()
+        poss = self._poss_calc_team()
+
+        tbg = points.merge(blocks, how="left", on=["team_id", "game_id"])
+
+        tbg = tbg.merge(assists, how="left", on=["team_id", "game_id"])
+        tbg = tbg.merge(rebounds, how="left", on=["team_id", "game_id"])
+        tbg = tbg.merge(turnovers, how="left", on=["team_id", "game_id"])
+        tbg = tbg.merge(fouls, how="left", on=["team_id", "game_id"])
+        tbg = tbg.merge(steals, how="left", on=["team_id", "game_id"])
+        tbg = tbg.merge(plus_minus, how="left", on=["team_id", "game_id"])
+        tbg = tbg.merge(poss, how="left", on=["team_id", "game_id"])
+        tbg["game_date"] = self.df["game_date"].unique()[0]
+        tbg["season"] = self.df["season"].unique()[0]
+        tbg["toc"] = self.df["seconds_elapsed"].max()
+        tbg[
+            "toc_string"
+        ] = f"{math.floor(self.df['seconds_elapsed'].max()/60)}:{self.df['seconds_elapsed'].max()%60}0"
+        tbg["is_home"] = np.where(
+            tbg["team_id"] == self.df["home_team_id"].unique()[0], 1, 0
+        )
+        tbg["is_win"] = np.where(tbg["points_for"] > tbg["points_against"], 1, 0)
+
+        return tbg

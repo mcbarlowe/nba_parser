@@ -389,3 +389,101 @@ def test_calc_rebound_team(setup):
     assert rebound.loc[rebound["team_id"] == 1610612743, "oreb"].values[0] == 9
     assert rebound.loc[rebound["team_id"] == 1610612746, "dreb"].values[0] == 32
     assert rebound.loc[rebound["team_id"] == 1610612743, "dreb"].values[0] == 30
+
+
+def test_calc_turnover_team(setup):
+    """
+    test to make sure team turnover calculations are working
+    """
+    pbp = setup
+    tov = pbp._turnover_calc_team()
+
+    assert tov.loc[tov["team_id"] == 1610612746, "tov"].values[0] == 20
+    assert tov.loc[tov["team_id"] == 1610612743, "tov"].values[0] == 19
+
+
+def test_calc_foul_team(setup):
+    """
+    test to make sure team foul calculations are working
+    """
+    pbp = setup
+    tov = pbp._foul_calc_team()
+
+    assert tov.loc[tov["team_id"] == 1610612746, "pf"].values[0] == 27
+    assert tov.loc[tov["team_id"] == 1610612743, "pf"].values[0] == 20
+
+
+def test_calc_steal_team(setup):
+    """
+    test to make sure team steal calculations are working
+    """
+    pbp = setup
+    steal = pbp._steal_calc_team()
+
+    assert steal.loc[steal["team_id"] == 1610612746, "stl"].values[0] == 7
+    assert steal.loc[steal["team_id"] == 1610612743, "stl"].values[0] == 6
+
+
+def test_calc_block_team(setup):
+    """
+    test to make sure team block calculations are working
+    """
+    pbp = setup
+    block = pbp._block_calc_team()
+
+    assert block.loc[block["team_id"] == 1610612746, "blk"].values[0] == 5
+    assert block.loc[block["team_id"] == 1610612743, "blk"].values[0] == 3
+
+
+def test_calc_plus_minus_team(setup):
+    """
+    test to make sure team plus_minus calculations are working
+    """
+    pbp = setup
+    plus_minus = pbp._plus_minus_team()
+
+    assert (
+        plus_minus.loc[plus_minus["team_id"] == 1610612746, "plus_minus"].values[0]
+        == -16
+    )
+    assert (
+        plus_minus.loc[plus_minus["team_id"] == 1610612743, "plus_minus"].values[0]
+        == 16
+    )
+
+
+def test_teambygamestats(setup):
+    """
+    test to make sure team rebound calculations are working
+    """
+    pbp = setup
+    tbg = pbp.teambygamestats()
+
+    assert tbg.loc[tbg["team_id"] == 1610612746, "plus_minus"].values[0] == -16
+    assert tbg.loc[tbg["team_id"] == 1610612743, "plus_minus"].values[0] == 16
+    assert tbg.loc[tbg["team_id"] == 1610612746, "blk"].values[0] == 5
+    assert tbg.loc[tbg["team_id"] == 1610612743, "blk"].values[0] == 3
+    assert tbg.loc[tbg["team_id"] == 1610612746, "stl"].values[0] == 7
+    assert tbg.loc[tbg["team_id"] == 1610612743, "stl"].values[0] == 6
+    assert tbg.loc[tbg["team_id"] == 1610612746, "pf"].values[0] == 27
+    assert tbg.loc[tbg["team_id"] == 1610612743, "pf"].values[0] == 20
+    assert tbg.loc[tbg["team_id"] == 1610612746, "oreb"].values[0] == 6
+    assert tbg.loc[tbg["team_id"] == 1610612743, "oreb"].values[0] == 9
+    assert tbg.loc[tbg["team_id"] == 1610612746, "dreb"].values[0] == 32
+    assert tbg.loc[tbg["team_id"] == 1610612743, "dreb"].values[0] == 30
+    assert tbg.loc[tbg["team_id"] == 1610612746, "ast"].values[0] == 21
+    assert tbg.loc[tbg["team_id"] == 1610612743, "ast"].values[0] == 31
+    assert tbg.loc[tbg["team_id"] == 1610612743, "fgm"].values[0] == 46
+    assert tbg.loc[tbg["team_id"] == 1610612743, "fga"].values[0] == 85
+    assert tbg.loc[tbg["team_id"] == 1610612743, "tpm"].values[0] == 10
+    assert tbg.loc[tbg["team_id"] == 1610612743, "tpa"].values[0] == 20
+    assert tbg.loc[tbg["team_id"] == 1610612743, "ftm"].values[0] == 21
+    assert tbg.loc[tbg["team_id"] == 1610612743, "fta"].values[0] == 32
+    assert tbg.loc[tbg["team_id"] == 1610612743, "points_for"].values[0] == 123
+    assert tbg.loc[tbg["team_id"] == 1610612746, "fgm"].values[0] == 37
+    assert tbg.loc[tbg["team_id"] == 1610612746, "fga"].values[0] == 79
+    assert tbg.loc[tbg["team_id"] == 1610612746, "tpm"].values[0] == 7
+    assert tbg.loc[tbg["team_id"] == 1610612746, "tpa"].values[0] == 14
+    assert tbg.loc[tbg["team_id"] == 1610612746, "ftm"].values[0] == 26
+    assert tbg.loc[tbg["team_id"] == 1610612746, "fta"].values[0] == 29
+    assert tbg.loc[tbg["team_id"] == 1610612746, "points_for"].values[0] == 107
