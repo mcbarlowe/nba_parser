@@ -30,6 +30,90 @@ class PbP:
         else:
             self.game_date = pbp_df["game_date"].unique()[0]
 
+        # calculating home and away possesions to later aggregate for players
+        # and teams
+
+        # calculating made shot possessions
+        self.df["home_possession"] = np.where(
+            (self.df.event_team == self.df.home_team_abbrev)
+            & (self.df.event_type_de == "shot"),
+            1,
+            0,
+        )
+        # calculating turnover possessions
+        self.df["home_possession"] = np.where(
+            (self.df.event_team == self.df.home_team_abbrev)
+            & (self.df.event_type_de == "turnover"),
+            1,
+            self.df["home_possession"],
+        )
+        # calculating defensive rebound possessions
+        self.df["home_possession"] = np.where(
+            (
+                (self.df.event_team == self.df.away_team_abbrev)
+                & (self.df.is_d_rebound == 1)
+            )
+            | (
+                (self.df.event_type_de == "rebound")
+                & (self.df.is_d_rebound == 0)
+                & (self.df.is_o_rebound == 0)
+                & (self.df.event_team == self.df.away_team_abbrev)
+                & (self.df.event_type_de.shift(1) != "free-throw")
+            ),
+            1,
+            self.df["home_possession"],
+        )
+        # calculating final free throw possessions
+        self.df["home_possession"] = np.where(
+            (self.df.event_team == self.df.home_team_abbrev)
+            & (
+                (self.df.homedescription.str.contains("Free Throw 2 of 2"))
+                | (self.df.homedescription.str.contains("Free Throw 3 of 3"))
+            ),
+            1,
+            self.df["home_possession"],
+        )
+        # calculating made shot possessions
+        self.df["away_possession"] = np.where(
+            (self.df.event_team == self.df.away_team_abbrev)
+            & (self.df.event_type_de == "shot"),
+            1,
+            0,
+        )
+        # calculating turnover possessions
+        self.df["away_possession"] = np.where(
+            (self.df.event_team == self.df.away_team_abbrev)
+            & (self.df.event_type_de == "turnover"),
+            1,
+            self.df["away_possession"],
+        )
+        # calculating defensive rebound possessions
+        self.df["away_possession"] = np.where(
+            (
+                (self.df.event_team == self.df.home_team_abbrev)
+                & (self.df.is_d_rebound == 1)
+            )
+            | (
+                (self.df.event_type_de == "rebound")
+                & (self.df.is_d_rebound == 0)
+                & (self.df.is_o_rebound == 0)
+                & (self.df.event_team == self.df.home_team_abbrev)
+                & (self.df.event_type_de.shift(1) != "free-throw")
+            ),
+            1,
+            self.df["away_possession"],
+        )
+        # calculating final free throw possessions
+        self.df["away_possession"] = np.where(
+            (self.df.event_team == self.df.away_team_abbrev)
+            & (
+                (self.df.visitordescription.str.contains("Free Throw 2 of 2"))
+                | (self.df.visitordescription.str.contains("Free Throw 3 of 3"))
+            ),
+            1,
+            self.df["away_possession"],
+        )
+
     def _point_calc_player(self):
         """
         method calculates simple shooting stats like field goals, three points,
@@ -877,14 +961,271 @@ class PbP:
 
         return total_toc
 
-    def __point_calc_team(self):
-        pass
+    def _poss_calc_player(self):
+        """
+        function to calculate possessions each player participated in
+        """
 
-    def __assist_calc_team(self):
-        pass
+        # calculating player possesions
+        player1 = self.df[
+            [
+                "home_player_1",
+                "home_player_1_id",
+                "home_possession",
+                "game_id",
+                "home_team_id",
+            ]
+        ].rename(
+            columns={"home_player_1": "player_name", "home_player_1_id": "player_id"}
+        )
+        player2 = self.df[
+            [
+                "home_player_2",
+                "home_player_2_id",
+                "home_possession",
+                "game_id",
+                "home_team_id",
+            ]
+        ].rename(
+            columns={"home_player_2": "player_name", "home_player_2_id": "player_id"}
+        )
+        player3 = self.df[
+            [
+                "home_player_3",
+                "home_player_3_id",
+                "home_possession",
+                "game_id",
+                "home_team_id",
+            ]
+        ].rename(
+            columns={"home_player_3": "player_name", "home_player_3_id": "player_id"}
+        )
+        player4 = self.df[
+            [
+                "home_player_4",
+                "home_player_4_id",
+                "home_possession",
+                "game_id",
+                "home_team_id",
+            ]
+        ].rename(
+            columns={"home_player_4": "player_name", "home_player_4_id": "player_id"}
+        )
+        player5 = self.df[
+            [
+                "home_player_5",
+                "home_player_5_id",
+                "home_possession",
+                "game_id",
+                "home_team_id",
+            ]
+        ].rename(
+            columns={"home_player_5": "player_name", "home_player_5_id": "player_id"}
+        )
+        home_possession_df = pd.concat([player1, player2, player3, player4, player5])
+        home_possession_df = (
+            home_possession_df.groupby(
+                ["player_id", "player_name", "game_id", "home_team_id"]
+            )["home_possession"]
+            .sum()
+            .reset_index()
+            .sort_values("home_possession")
+        )
+        player1 = self.df[
+            [
+                "away_player_1",
+                "away_player_1_id",
+                "away_possession",
+                "game_id",
+                "away_team_id",
+            ]
+        ].rename(
+            columns={"away_player_1": "player_name", "away_player_1_id": "player_id"}
+        )
+        player2 = self.df[
+            [
+                "away_player_2",
+                "away_player_2_id",
+                "away_possession",
+                "game_id",
+                "away_team_id",
+            ]
+        ].rename(
+            columns={"away_player_2": "player_name", "away_player_2_id": "player_id"}
+        )
+        player3 = self.df[
+            [
+                "away_player_3",
+                "away_player_3_id",
+                "away_possession",
+                "game_id",
+                "away_team_id",
+            ]
+        ].rename(
+            columns={"away_player_3": "player_name", "away_player_3_id": "player_id"}
+        )
+        player4 = self.df[
+            [
+                "away_player_4",
+                "away_player_4_id",
+                "away_possession",
+                "game_id",
+                "away_team_id",
+            ]
+        ].rename(
+            columns={"away_player_4": "player_name", "away_player_4_id": "player_id"}
+        )
+        player5 = self.df[
+            [
+                "away_player_5",
+                "away_player_5_id",
+                "away_possession",
+                "game_id",
+                "away_team_id",
+            ]
+        ].rename(
+            columns={"away_player_5": "player_name", "away_player_5_id": "player_id"}
+        )
+        away_possession_df = pd.concat([player1, player2, player3, player4, player5])
+        away_possession_df = (
+            away_possession_df.groupby(
+                ["player_id", "player_name", "game_id", "away_team_id"]
+            )["away_possession"]
+            .sum()
+            .reset_index()
+            .sort_values("away_possession")
+        )
 
-    def __rebound_calc_team(self):
-        pass
+        home_possession_df = home_possession_df.rename(
+            columns={"home_team_id": "team_id", "home_possession": "possessions"}
+        )
+        away_possession_df = away_possession_df.rename(
+            columns={"away_team_id": "team_id", "away_possession": "possessions"}
+        )
+        possession_df = pd.concat([home_possession_df, away_possession_df])
+
+        return possession_df
+
+    def _poss_calc_team(self):
+        """
+        method to calculate team possession numbers
+        """
+
+        row1 = [
+            self.df.home_team_id.unique()[0],
+            self.df.game_id.unique()[0],
+            self.df.home_team_abbrev.unique()[0],
+            self.df["home_possession"].sum(),
+        ]
+        row2 = [
+            self.df.away_team_id.unique()[0],
+            self.df.game_id.unique()[0],
+            self.df.away_team_abbrev.unique()[0],
+            self.df["away_possession"].sum(),
+        ]
+        team_possession_df = pd.DataFrame(
+            [row1, row2], columns=["team_id", "game_id", "team_abbrev", "possessions"]
+        )
+
+        return team_possession_df
+
+    def _point_calc_team(self):
+        """
+        method to calculate team field goals, free throws, and three points
+        made
+        """
+        self.df["fg_attempted"] = np.where(
+            self.df["event_type_de"].isin(["missed_shot", "shot"]), True, False
+        )
+        self.df["ft_attempted"] = np.where(
+            self.df["event_type_de"] == "free-throw", True, False
+        )
+        self.df["fg_made"] = np.where(
+            (self.df["event_type_de"].isin(["shot"])) & (self.df["points_made"] > 0),
+            True,
+            False,
+        )
+        self.df["tp_made"] = np.where(self.df["points_made"] == 3, True, False)
+        self.df["ft_made"] = np.where(
+            (self.df["event_type_de"] == "free-throw") & (self.df["points_made"] == 1),
+            True,
+            False,
+        )
+        teams_df = (
+            self.df.groupby(["player1_team_id", "game_id"])[
+                [
+                    "points_made",
+                    "is_three",
+                    "fg_attempted",
+                    "ft_attempted",
+                    "fg_made",
+                    "tp_made",
+                    "ft_made",
+                ]
+            ]
+            .sum()
+            .reset_index()
+        )
+        teams_df["player1_team_id"] = teams_df["player1_team_id"].astype(int)
+        teams_df.rename(
+            columns={
+                "player1_team_id": "team_id",
+                "points_made": "points_for",
+                "is_three": "tpa",
+                "fg_made": "fgm",
+                "fg_attempted": "fga",
+                "ft_made": "ftm",
+                "ft_attempted": "fta",
+                "tp_made": "tpm",
+            },
+            inplace=True,
+        )
+
+        return teams_df
+
+    def _assist_calc_team(self):
+        """
+        method to sum assists made for each team
+        """
+        self.df["is_assist"] = np.where(
+            (self.df["event_type_de"] == "shot") & (self.df["player2_id"] != 0),
+            True,
+            False,
+        )
+        assists_df = (
+            self.df.groupby(["player1_team_id", "game_id"])[["is_assist"]]
+            .sum()
+            .reset_index()
+        )
+        assists_df.rename(
+            columns={"is_assist": "ast", "player1_team_id": "team_id",}, inplace=True,
+        )
+
+        return assists_df
+
+    def _rebound_calc_team(self):
+        '''
+        method to calculate team offensive and deffensive rebound totals
+        '''
+        rebounds_df = (
+            self.df.groupby(["player1_team_id", "game_id"])[[
+                "is_d_rebound",
+                "is_o_rebound",
+            ]]
+            .sum()
+            .reset_index()
+        )
+        rebounds_df["player1_team_id"] = rebounds_df["player1_team_id"].astype(int)
+        rebounds_df.rename(
+            columns={
+                "player1_team_id": "team_id",
+                "is_d_rebound": "dreb",
+                "is_o_rebound": "oreb",
+            },
+            inplace=True,
+        )
+
+        return rebounds_df
 
     def __turnover_calc_team(self):
         pass
@@ -915,6 +1256,7 @@ class PbP:
         steals = self._steal_calc_player()
         plus_minus = self._plus_minus_calc_player()
         toc = self._toc_calc_player()
+        poss = self._poss_calc_player()
 
         pbg = toc.merge(
             points, how="left", on=["player_id", "team_id", "game_date", "game_id"]
@@ -940,6 +1282,7 @@ class PbP:
         pbg = pbg.merge(
             plus_minus, how="left", on=["player_id", "team_id", "game_date", "game_id"]
         )
+        pbg = pbg.merge(poss, how="left", on=["player_id", "team_id", "game_id"])
         pbg["blk"] = pbg["blk"].fillna(0).astype(int)
         pbg["ast"] = pbg["ast"].fillna(0).astype(int)
         pbg["dreb"] = pbg["dreb"].fillna(0).astype(int)

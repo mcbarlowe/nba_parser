@@ -316,3 +316,76 @@ def test_playerbygamestats(setup):
     assert pbg.loc[pbg["player_id"] == 947, "tpa"].values[0] == 2
     assert pbg.loc[pbg["player_id"] == 947, "ftm"].values[0] == 4
     assert pbg.loc[pbg["player_id"] == 947, "fta"].values[0] == 6
+
+
+def test_calc_poss_player(setup):
+    """
+    test to make sure possession calculation is working hard to test without
+    manually counting and this is close enough
+    """
+
+    pbp = setup
+    poss = pbp._poss_calc_player()
+    assert isinstance(poss, pd.DataFrame)
+
+
+def test_calc_poss_team(setup):
+    """
+    test to make sure possession calculation is working hard to test without
+    manually counting and this is close enough
+    """
+
+    pbp = setup
+    poss = pbp._poss_calc_team()
+
+    assert isinstance(poss, pd.DataFrame)
+
+
+def test_calc_point_team(setup):
+    """
+    test to make sure team totals for field goals, free throws and three points
+    are accurate
+    """
+
+    pbp = setup
+    points = pbp._point_calc_team()
+
+    assert points.loc[points["team_id"] == 1610612743, "fgm"].values[0] == 46
+    assert points.loc[points["team_id"] == 1610612743, "fga"].values[0] == 85
+    assert points.loc[points["team_id"] == 1610612743, "tpm"].values[0] == 10
+    assert points.loc[points["team_id"] == 1610612743, "tpa"].values[0] == 20
+    assert points.loc[points["team_id"] == 1610612743, "ftm"].values[0] == 21
+    assert points.loc[points["team_id"] == 1610612743, "fta"].values[0] == 32
+    assert points.loc[points["team_id"] == 1610612743, "points_for"].values[0] == 123
+    assert points.loc[points["team_id"] == 1610612746, "fgm"].values[0] == 37
+    assert points.loc[points["team_id"] == 1610612746, "fga"].values[0] == 79
+    assert points.loc[points["team_id"] == 1610612746, "tpm"].values[0] == 7
+    assert points.loc[points["team_id"] == 1610612746, "tpa"].values[0] == 14
+    assert points.loc[points["team_id"] == 1610612746, "ftm"].values[0] == 26
+    assert points.loc[points["team_id"] == 1610612746, "fta"].values[0] == 29
+    assert points.loc[points["team_id"] == 1610612746, "points_for"].values[0] == 107
+
+
+def test_calc_assist_team(setup):
+    """
+    test to make sure team assist calculation is working properly
+    """
+
+    pbp = setup
+    assist = pbp._assist_calc_team()
+
+    assert assist.loc[assist["team_id"] == 1610612746, "ast"].values[0] == 21
+    assert assist.loc[assist["team_id"] == 1610612743, "ast"].values[0] == 31
+
+
+def test_calc_rebound_team(setup):
+    """
+    test to make sure team rebound calculations are working
+    """
+    pbp = setup
+    rebound = pbp._rebound_calc_team()
+
+    assert rebound.loc[rebound["team_id"] == 1610612746, "oreb"].values[0] == 6
+    assert rebound.loc[rebound["team_id"] == 1610612743, "oreb"].values[0] == 9
+    assert rebound.loc[rebound["team_id"] == 1610612746, "dreb"].values[0] == 32
+    assert rebound.loc[rebound["team_id"] == 1610612743, "dreb"].values[0] == 30
