@@ -1435,4 +1435,18 @@ class PbP:
         )
         tbg["is_win"] = np.where(tbg["points_for"] > tbg["points_against"], 1, 0)
 
+        tbg["blk"] = tbg["blk"].fillna(0).astype(int)
+        tbg["ast"] = tbg["ast"].fillna(0).astype(int)
+        tbg["dreb"] = tbg["dreb"].fillna(0).astype(int)
+        tbg["oreb"] = tbg["oreb"].fillna(0).astype(int)
+        tbg["tov"] = tbg["tov"].fillna(0).astype(int)
+        tbg["pf"] = tbg["pf"].fillna(0).astype(int)
+        tbg["stl"] = tbg["stl"].fillna(0).astype(int)
+        tbg["fgm"] = tbg["fgm"].fillna(0).astype(int)
+        tbg["fga"] = tbg["fga"].fillna(0).astype(int)
+        tbg["tpm"] = tbg["tpm"].fillna(0).astype(int)
+        tbg["tpa"] = tbg["tpa"].fillna(0).astype(int)
+        tbg["ftm"] = tbg["ftm"].fillna(0).astype(int)
+        tbg["fta"] = tbg["fta"].fillna(0).astype(int)
+
         return tbg

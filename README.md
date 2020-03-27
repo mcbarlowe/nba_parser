@@ -15,14 +15,33 @@ lines of code.
 
 ```python
 import nba_scraper.nba_scraper as ns
-import nba_parser.nba_parser as npsr
+import nba_parser as np
 
 game_df = ns.scrape_game([20700233])
-pbp = npsr.PbP(game_df)
+pbp = np.PbP(game_df)
 player_stats = pbp.playerbygamestats()
 ```
 
 Which produces a dataframe containing the stats of field goals made, field goals attempted,
 three points made, three points attempted, free throws made, free throws attempted,
-steals, turnovers, blocks, personal fouls, minutes played(toc), offensive rebounds,
+steals, turnovers, blocks, personal fouls, minutes played(toc), offensive rebounds, possessions
+and defensive rebounds.
+
+# Team Stats
+
+Team stats are called very similar to player stats.
+
+```python
+import nba_scraper.nba_scraper as ns
+import nba_parser as np
+
+game_df = ns.scrape_game([20700233])
+pbp = np.PbP(game_df)
+player_stats = pbp.teambygamestats()
+```
+
+The team stats that will be calculation are field goals made, field goals attempted,
+three points made, three points attempted, free throws made, free throws attempted,
+steals, turnovers, blocks, personal fouls, minutes played(toc), offensive rebounds, possessions,
+home team, winning team, fouls drawn, shots blocked, total points for, total points against,
 and defensive rebounds.
