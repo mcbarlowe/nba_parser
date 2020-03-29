@@ -142,7 +142,7 @@ class PbP:
 
         player_points_df = (
             self.df.groupby(["player1_id", "game_date", "game_id", "player1_team_id"])[
-                ["fgm", "fga", "tpm", "tpa", "ftm", "fta"]
+                ["fgm", "fga", "tpm", "tpa", "ftm", "fta", "points_made"]
             ]
             .sum()
             .reset_index()
@@ -151,7 +151,7 @@ class PbP:
             "player1_team_id"
         ].astype(int)
         player_points_df.rename(
-            columns={"player1_id": "player_id", "player1_team_id": "team_id"},
+                columns={"player1_id": "player_id", "player1_team_id": "team_id", "points_made": "points"},
             inplace=True,
         )
 

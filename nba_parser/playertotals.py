@@ -33,6 +33,7 @@ class PlayerTotals:
             "minus",
             "plus_minus",
             "possessions",
+            "points",
         ]
         grouped_df = (
             self.pbg.groupby(["player_id", "player_name"])[stats].sum().reset_index()
@@ -62,10 +63,42 @@ class PlayerTotals:
         grouped_df["def_rating"] = (grouped_df["minus"] * 100) / grouped_df[
             "possessions"
         ]
-        grouped_df["efg_percent"] = round(((
-            grouped_df["fgm"] + 0.5 * grouped_df["tpm"]
-        ) / grouped_df["fga"])  * 100, 1)
-
-        print(grouped_df)
+        grouped_df["efg_percent"] = round(
+            ((grouped_df["fgm"] + 0.5 * grouped_df["tpm"]) / grouped_df["fga"]) * 100, 1
+        )
+        grouped_df["ts_percent"] = round(
+            (
+                grouped_df["points"]
+                / (2 * (grouped_df["fga"] + (0.44 * grouped_df["fta"])))
+            )
+            * 100,
+            1,
+        )
+        grouped_df["oreb_percent"] = round(
+            (grouped_df["oreb"] / grouped_df["possessions"]) * 100, 1
+        )
+        grouped_df["dreb_percent"] = round(
+            (grouped_df["dreb"] / grouped_df["possessions"]) * 100, 1
+        )
+        grouped_df["ast_percent"] = round(
+            (grouped_df["ast"] / grouped_df["possessions"]) * 100, 1
+        )
+        grouped_df["blk_percent"] = round(
+            (grouped_df["blk"] / grouped_df["possessions"]) * 100, 1
+        )
+        grouped_df["stl_percent"] = round(
+            (grouped_df["stl"] / grouped_df["possessions"]) * 100, 1
+        )
+        grouped_df["tov_percent"] = round(
+            (grouped_df["tov"] / grouped_df["possessions"]) * 100, 1
+        )
+        grouped_df["usg_percent"] = round(
+            (
+                (grouped_df["tov"] + grouped_df["fga"] + (0.44 * grouped_df["fta"]))
+                / grouped_df["possessions"]
+            )
+            * 100,
+            1,
+        )
 
         return grouped_df

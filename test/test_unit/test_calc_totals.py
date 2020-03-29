@@ -23,9 +23,10 @@ def setup(scope="module"):
     pbp_dfs = [pd.read_csv(f"test/{f}") for f in files]
     pbp_dfs = [npar.PbP(pbp_df) for pbp_df in pbp_dfs]
     pbg_dfs = [pbp_df.playerbygamestats() for pbp_df in pbp_dfs]
+    tbg_dfs = [pbp_df.teambygamestats() for pbp_df in pbp_dfs]
     # TODO add multiple files here to make the tests more random and more
     # robust Matt Barlowe 2020-03-24
-    yield pbg_dfs
+    yield pbg_dfs, tbg_dfs
 
 
 def test_player_advanced_stats(setup):
@@ -34,7 +35,7 @@ def test_player_advanced_stats(setup):
     when grouping things together
     """
 
-    pbp_list = setup
+    pbp_list, _ = setup
 
     player_totals = npar.PlayerTotals(pbp_list)
     player_totals = player_totals.player_advanced_stats()
@@ -52,6 +53,9 @@ def test_player_advanced_stats(setup):
     assert player_totals.loc[player_totals["player_id"] == 2544, "tov"].values[0] == 33
     assert player_totals.loc[player_totals["player_id"] == 2544, "blk"].values[0] == 6
     assert (
+        player_totals.loc[player_totals["player_id"] == 2544, "points"].values[0] == 240
+    )
+    assert (
         player_totals.loc[player_totals["player_id"] == 2544, "plus_minus"].values[0]
         == 83
     )
@@ -59,4 +63,46 @@ def test_player_advanced_stats(setup):
         player_totals.loc[player_totals["player_id"] == 2544, "team_abbrev"].values[0]
         == "LAL"
     )
-    assert player_totals.loc[player_totals["player_id"] == 2544, "efg_percent"].values[0] == 51.3
+    assert (
+        player_totals.loc[player_totals["player_id"] == 2544, "efg_percent"].values[0]
+        == 51.3
+    )
+    assert (
+        player_totals.loc[player_totals["player_id"] == 2544, "ts_percent"].values[0]
+        == 55.2
+    )
+
+
+def test_team_advanced_stats(setup):
+    """
+    test to make sure the advanced stats are calculating properly
+    when grouping things together
+    """
+
+    _, tbg_list = setup
+
+    team_totals = npar.TeamTotals(tbg_list)
+    team_totals = team_totals.team_advanced_stats()
+
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "fgm"].values[0] == 426
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "gp"].values[0] == 10
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "fga"].values[0] == 903
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "tpm"].values[0] == 93
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "tpa"].values[0] == 292
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "ftm"].values[0] == 154
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "fta"].values[0] == 210
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "oreb"].values[0] == 97
+    assert (
+        team_totals.loc[team_totals["team_id"] == 1610612747, "dreb"].values[0] == 366
+    )
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "ast"].values[0] == 265
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "tov"].values[0] == 142
+    assert team_totals.loc[team_totals["team_id"] == 1610612747, "blk"].values[0] == 75
+    assert (
+        team_totals.loc[team_totals["team_id"] == 1610612747, "points_for"].values[0]
+        == 1099
+    )
+    assert (
+        team_totals.loc[team_totals["team_id"] == 1610612747, "plus_minus"].values[0]
+        == 83
+    )
