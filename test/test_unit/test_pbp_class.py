@@ -1,10 +1,10 @@
-from nba_parser.nba_parser import PbP
+from nba_parser import PbP
 import pandas as pd
 import pytest
 
 
 @pytest.fixture
-def setup():
+def setup(scope="module"):
     """
     function for test setup and teardown
     """
