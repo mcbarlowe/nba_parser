@@ -1771,18 +1771,12 @@ class PbP:
         ].index
         shift_dfs = []
         past_index = 0
-        import time
 
-        start = time.time()
         for i in poss_index:
             shift_dfs.extend([pbp_df.iloc[past_index + 1 : i + 1, :].reset_index()])
             past_index = i
-        end = time.time()
-        print(f"time to merge possession rows with points:{end-start}")
-        start = time.time()
+
         poss_df = pd.concat(self.parse_possessions(shift_dfs))
-        end = time.time()
-        print(f"time to create rapm possession df:{end-start}")
 
         return poss_df
 

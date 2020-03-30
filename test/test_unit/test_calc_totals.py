@@ -25,7 +25,7 @@ def setup():
     pbg_dfs = [pbp_df.playerbygamestats() for pbp_df in pbp_dfs]
     tbg_dfs = [pbp_df.teambygamestats() for pbp_df in pbp_dfs]
 
-    yield pbg_dfs, tbg_dfs
+    yield pbg_dfs, tbg_dfs, pbp_dfs
 
 
 def test_player_advanced_stats(setup):
@@ -34,7 +34,7 @@ def test_player_advanced_stats(setup):
     when grouping things together
     """
 
-    pbp_list, _ = setup
+    pbp_list, _, _ = setup
 
     player_totals = npar.PlayerTotals(pbp_list)
     player_totals = player_totals.player_advanced_stats()
@@ -78,7 +78,7 @@ def test_team_advanced_stats(setup):
     when grouping things together
     """
 
-    _, tbg_list = setup
+    _, tbg_list, _ = setup
 
     team_totals = npar.TeamTotals(tbg_list)
     team_totals = team_totals.team_advanced_stats()
@@ -107,13 +107,26 @@ def test_team_advanced_stats(setup):
     )
 
 
-def test_rapm(setup):
+def test_team_rapm(setup):
     """
     test to make sure rapm code runs properly
     """
-    _, tbg_list = setup
+    _, tbg_list, _ = setup
 
     team_totals = npar.TeamTotals(tbg_list)
     team_rapm = team_totals.team_rapm_results()
 
     print(team_rapm)
+
+
+def test_player_rapm(setup):
+    """
+    test to make sure rapm code runs properly
+    """
+    _, _, pbp_list = setup
+
+    rapm_possession = pd.concat([x.rapm_possessions() for x in pbp_list])
+    print(rapm_possession)
+    player_rapm = npar.PlayerTotals.player_rapm_results(rapm_possession)
+
+    print(player_rapm)
