@@ -109,7 +109,7 @@ for game_id in range(20700001, 2070010):
 player_totals = npar.PlayerTotals(pbg_dfs)
 
 #produce a dataframe of eFG%, TS%, TOV%, OREB%, AST%, DREB%,
-STL%, BLK%, USG%, along with summing the other
+#STL%, BLK%, USG%, along with summing the other
 #stats produced by the playerbygamestats() method to allow further
 #calculations
 
