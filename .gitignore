@@ -2,3 +2,6 @@ Untitled.*
 .ipynb_checkpoints/
 
 __pycache__
+dist/
+nba_parser.egg-info/
+.coverage
