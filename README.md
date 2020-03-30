@@ -15,10 +15,10 @@ lines of code.
 
 ```python
 import nba_scraper.nba_scraper as ns
-import nba_parser as np
+import nba_parser as npar
 
 game_df = ns.scrape_game([20700233])
-pbp = np.PbP(game_df)
+pbp = npar.PbP(game_df)
 player_stats = pbp.playerbygamestats()
 
 #can also derive single possessions for RAPM calculations
@@ -37,10 +37,10 @@ Team stats are called very similar to player stats.
 
 ```python
 import nba_scraper.nba_scraper as ns
-import nba_parser as np
+import nba_parser as npar
 
 game_df = ns.scrape_game([20700233])
-pbp = np.PbP(game_df)
+pbp = npar.PbP(game_df)
 team_stats = pbp.teambygamestats()
 ```
 
