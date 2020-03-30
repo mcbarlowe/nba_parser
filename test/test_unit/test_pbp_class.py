@@ -316,6 +316,12 @@ def test_playerbygamestats(setup):
     assert pbg.loc[pbg["player_id"] == 947, "tpa"].values[0] == 2
     assert pbg.loc[pbg["player_id"] == 947, "ftm"].values[0] == 4
     assert pbg.loc[pbg["player_id"] == 947, "fta"].values[0] == 6
+    assert pbg.loc[pbg["player_id"] == 947, "opponent"].values[0] == 1610612746
+    assert pbg.loc[pbg["player_id"] == 1894, "opponent"].values[0] == 1610612743
+    assert pbg.loc[pbg["player_id"] == 947, "opponent_abbrev"].values[0] == "LAC"
+    assert pbg.loc[pbg["player_id"] == 1894, "opponent_abbrev"].values[0] == "DEN"
+    assert pbg.loc[pbg["player_id"] == 947, "is_home"].values[0] == 1
+    assert pbg.loc[pbg["player_id"] == 1894, "is_home"].values[0] == 0
 
 
 def test_calc_poss_player(setup):
@@ -487,3 +493,7 @@ def test_teambygamestats(setup):
     assert tbg.loc[tbg["team_id"] == 1610612746, "ftm"].values[0] == 26
     assert tbg.loc[tbg["team_id"] == 1610612746, "fta"].values[0] == 29
     assert tbg.loc[tbg["team_id"] == 1610612746, "points_for"].values[0] == 107
+    assert tbg.loc[tbg["team_id"] == 1610612746, "opponent"].values[0] == 1610612743
+    assert tbg.loc[tbg["team_id"] == 1610612746, "opponent_abbrev"].values[0] == "DEN"
+    assert tbg.loc[tbg["team_id"] == 1610612743, "opponent"].values[0] == 1610612746
+    assert tbg.loc[tbg["team_id"] == 1610612743, "opponent_abbrev"].values[0] == "LAC"

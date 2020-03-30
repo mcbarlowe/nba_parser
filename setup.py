@@ -13,7 +13,7 @@ setup(
     author="Matthew Barlowe",
     author_email="matt@barloweanalytics.com",
     keywords=["basketball", "NBA"],
-    install_requires=["pandas", "numpy"],
+    install_requires=["pandas", "numpy", "sklearn"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",

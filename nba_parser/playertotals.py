@@ -101,4 +101,7 @@ class PlayerTotals:
             1,
         )
 
+        grouped_df["min_season"] = self.pbg["season"].min()
+        grouped_df["max_season"] = self.pbg["season"].max()
+
         return grouped_df

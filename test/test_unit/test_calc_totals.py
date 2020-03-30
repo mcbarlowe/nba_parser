@@ -3,8 +3,8 @@ import pandas as pd
 import nba_parser as npar
 
 
-@pytest.fixture
-def setup(scope="module"):
+@pytest.fixture(scope="session")
+def setup():
     """
     function for test setup and teardown
     """
@@ -24,8 +24,7 @@ def setup(scope="module"):
     pbp_dfs = [npar.PbP(pbp_df) for pbp_df in pbp_dfs]
     pbg_dfs = [pbp_df.playerbygamestats() for pbp_df in pbp_dfs]
     tbg_dfs = [pbp_df.teambygamestats() for pbp_df in pbp_dfs]
-    # TODO add multiple files here to make the tests more random and more
-    # robust Matt Barlowe 2020-03-24
+
     yield pbg_dfs, tbg_dfs
 
 
@@ -106,3 +105,15 @@ def test_team_advanced_stats(setup):
         team_totals.loc[team_totals["team_id"] == 1610612747, "plus_minus"].values[0]
         == 83
     )
+
+
+def test_rapm(setup):
+    """
+    test to make sure rapm code runs properly
+    """
+    _, tbg_list = setup
+
+    team_totals = npar.TeamTotals(tbg_list)
+    team_rapm = team_totals.team_rapm_results()
+
+    print(team_rapm)

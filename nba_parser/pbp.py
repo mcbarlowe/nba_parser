@@ -151,7 +151,11 @@ class PbP:
             "player1_team_id"
         ].astype(int)
         player_points_df.rename(
-                columns={"player1_id": "player_id", "player1_team_id": "team_id", "points_made": "points"},
+            columns={
+                "player1_id": "player_id",
+                "player1_team_id": "team_id",
+                "points_made": "points",
+            },
             inplace=True,
         )
 
@@ -1837,10 +1841,18 @@ class PbP:
         pbg["tpa"] = pbg["tpa"].fillna(0).astype(int)
         pbg["ftm"] = pbg["ftm"].fillna(0).astype(int)
         pbg["fta"] = pbg["fta"].fillna(0).astype(int)
+        pbg["is_home"] = np.where(pbg["team_id"] == self.home_team_id, 1, 0)
         pbg["team_abbrev"] = np.where(
             self.home_team_id == pbg["team_id"], self.home_team, self.away_team
         )
-
+        pbg["opponent"] = np.where(
+            pbg["team_id"] == self.home_team_id, self.away_team_id, self.home_team_id
+        )
+        pbg["opponent_abbrev"] = np.where(
+            pbg["team_id"] == self.home_team_id, self.away_team, self.home_team
+        )
+        pbg["season"] = self.season
+        pbg["player_id"] = pbg["player_id"].astype(int)
         pbg = pbg[pbg["toc"] > 0]
 
         return pbg
@@ -1893,5 +1905,11 @@ class PbP:
         tbg["tpa"] = tbg["tpa"].fillna(0).astype(int)
         tbg["ftm"] = tbg["ftm"].fillna(0).astype(int)
         tbg["fta"] = tbg["fta"].fillna(0).astype(int)
+        tbg["opponent"] = np.where(
+            tbg["team_id"] == self.home_team_id, self.away_team_id, self.home_team_id
+        )
+        tbg["opponent_abbrev"] = np.where(
+            tbg["team_id"] == self.home_team_id, self.away_team, self.home_team
+        )
 
         return tbg
