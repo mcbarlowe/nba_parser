@@ -31,6 +31,10 @@ class PbP:
         else:
             self.game_date = pbp_df["game_date"].unique()[0]
 
+        # change column types to fit my database at a later time on insert
+
+        self.df["scoremargin"] = self.df["scoremargin"].astype(str)
+
         # calculating home and away possesions to later aggregate for players
         # and teams
 
@@ -1776,7 +1780,7 @@ class PbP:
             shift_dfs.extend([pbp_df.iloc[past_index + 1 : i + 1, :].reset_index()])
             past_index = i
 
-        poss_df = pd.concat(self.parse_possessions(shift_dfs))
+        poss_df = pd.concat(self.parse_possessions(shift_dfs), sort=True)
 
         return poss_df
 
