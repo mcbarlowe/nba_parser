@@ -17,3 +17,4 @@ urllib3==1.25.8
 pytest==5.4.1
 psycopg2-binary==2.8.3
 codecov==2.0.22
+pytest-cov==2.8.1
