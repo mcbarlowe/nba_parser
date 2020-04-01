@@ -1,13 +1,9 @@
-language: python
-
-python:
-    - "3.6"
-
-install:
-    pip install -r requirements.txt
-
-script:
-    - pytest -s --cov=nba_parser
-
+---
 after_success:
-    - codecov
+  - codecov
+install: "pip install -r requirements.txt"
+language: python
+python:
+  - "3.6"
+script:
+  - "pytest -s --cov=nba_parser"
