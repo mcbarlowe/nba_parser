@@ -6,4 +6,4 @@ language: python
 python:
   - "3.6"
 script:
-  - "pytest -s --cov=nba_parser test/"
+    - pytest -s --cov=nba_parser test/test_unit/test_calc_totals.py test/test_unit/test_pbp_class.py
