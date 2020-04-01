@@ -3,17 +3,19 @@ import pandas as pd
 import pytest
 
 
-@pytest.fixture
-def setup(scope="module"):
+@pytest.fixture(scope="session")
+def setup():
     """
     function for test setup and teardown
     """
     pbp_df = pd.read_csv("test/20700233.csv")
     pbp_df["season"] = 2008
     pbp = PbP(pbp_df)
+    pbp_df = pd.read_csv("test/21100736.csv")
+    pbp1 = PbP(pbp_df)
     # TODO add multiple files here to make the tests more random and more
     # robust Matt Barlowe 2020-03-24
-    yield pbp
+    yield pbp, pbp1
 
 
 def test_class_build(setup):
@@ -21,7 +23,7 @@ def test_class_build(setup):
     This test makes sure the proper class is instantiated when called
     """
 
-    pbp = setup
+    pbp, _ = setup
 
     assert isinstance(pbp, PbP)
     assert isinstance(pbp.df, pd.DataFrame)
@@ -39,7 +41,7 @@ def test_point_calc_player(setup):
     attempted/made, and free throws attempted/made are correct
     """
 
-    pbp = setup
+    pbp, _ = setup
 
     stats_df = pbp._point_calc_player()
 
@@ -62,7 +64,7 @@ def test_block_calc_player(setup):
     testing to make sure block calculations are computing properly
     """
 
-    pbp = setup
+    pbp, _ = setup
 
     blocks = pbp._block_calc_player()
     stats_df = pbp._point_calc_player()
@@ -87,7 +89,7 @@ def test_assist_calc_player(setup):
     testing to make sure block calculations are computing properly
     """
 
-    pbp = setup
+    pbp, _ = setup
 
     assists = pbp._assist_calc_player()
     stats_df = pbp._point_calc_player()
@@ -112,7 +114,7 @@ def test_rebound_calc_player(setup):
     testing to make sure block calculations are computing properly
     """
 
-    pbp = setup
+    pbp, _ = setup
 
     rebounds = pbp._rebound_calc_player()
     stats_df = pbp._point_calc_player()
@@ -121,7 +123,7 @@ def test_rebound_calc_player(setup):
     # zero assists are properly calculated as well
 
     stats_df = stats_df.merge(
-        rebounds, how="left", on=["player_id", "team_id", "game_date", "game_id"]
+        rebounds, how="left", on=["player_id", "game_date", "game_id"]
     )
     stats_df["dreb"] = stats_df["dreb"].fillna(0).astype(int)
     stats_df["oreb"] = stats_df["oreb"].fillna(0).astype(int)
@@ -143,7 +145,7 @@ def test_steal_calc_player(setup):
     """
     testing to make sure steal calculations are correct
     """
-    pbp = setup
+    pbp, _ = setup
 
     steals = pbp._steal_calc_player()
     stats_df = pbp._point_calc_player()
@@ -166,7 +168,7 @@ def test_turnover_calc_player(setup):
     """
     testing to make sure steal calculations are correct
     """
-    pbp = setup
+    pbp, _ = setup
 
     turnovers = pbp._turnover_calc_player()
     stats_df = pbp._point_calc_player()
@@ -189,7 +191,7 @@ def test_foul_calc_player(setup):
     """
     testing to make sure personal foul calculations are correct
     """
-    pbp = setup
+    pbp, _ = setup
 
     fouls = pbp._foul_calc_player()
     stats_df = pbp._point_calc_player()
@@ -212,7 +214,7 @@ def test_plus_minus_calc_player(setup):
     """
     testing to make sure personal foul calculations are correct
     """
-    pbp = setup
+    pbp, _ = setup
 
     plus_minus = pbp._plus_minus_calc_player()
     stats_df = pbp._point_calc_player()
@@ -236,7 +238,7 @@ def test_toc_calc_player(setup):
     testing time on court calculations
     """
 
-    pbp = setup
+    pbp, _ = setup
 
     toc = pbp._toc_calc_player()
 
@@ -248,7 +250,7 @@ def test_toc_calc_player(setup):
 
 def test_playerbygamestats(setup):
 
-    pbp = setup
+    pbp, _ = setup
 
     pbg = pbp.playerbygamestats()
 
@@ -330,7 +332,7 @@ def test_calc_poss_player(setup):
     manually counting and this is close enough
     """
 
-    pbp = setup
+    pbp, _ = setup
     poss = pbp._poss_calc_player()
     assert isinstance(poss, pd.DataFrame)
 
@@ -341,7 +343,7 @@ def test_calc_poss_team(setup):
     manually counting and this is close enough
     """
 
-    pbp = setup
+    pbp, _ = setup
     poss = pbp._poss_calc_team()
 
     assert isinstance(poss, pd.DataFrame)
@@ -353,7 +355,7 @@ def test_calc_point_team(setup):
     are accurate
     """
 
-    pbp = setup
+    pbp, _ = setup
     points = pbp._point_calc_team()
 
     assert points.loc[points["team_id"] == 1610612743, "fgm"].values[0] == 46
@@ -377,7 +379,7 @@ def test_calc_assist_team(setup):
     test to make sure team assist calculation is working properly
     """
 
-    pbp = setup
+    pbp, _ = setup
     assist = pbp._assist_calc_team()
 
     assert assist.loc[assist["team_id"] == 1610612746, "ast"].values[0] == 21
@@ -388,7 +390,7 @@ def test_calc_rebound_team(setup):
     """
     test to make sure team rebound calculations are working
     """
-    pbp = setup
+    pbp, _ = setup
     rebound = pbp._rebound_calc_team()
 
     assert rebound.loc[rebound["team_id"] == 1610612746, "oreb"].values[0] == 6
@@ -401,7 +403,7 @@ def test_calc_turnover_team(setup):
     """
     test to make sure team turnover calculations are working
     """
-    pbp = setup
+    pbp, _ = setup
     tov = pbp._turnover_calc_team()
 
     assert tov.loc[tov["team_id"] == 1610612746, "tov"].values[0] == 20
@@ -412,7 +414,7 @@ def test_calc_foul_team(setup):
     """
     test to make sure team foul calculations are working
     """
-    pbp = setup
+    pbp, _ = setup
     tov = pbp._foul_calc_team()
 
     assert tov.loc[tov["team_id"] == 1610612746, "pf"].values[0] == 27
@@ -423,7 +425,7 @@ def test_calc_steal_team(setup):
     """
     test to make sure team steal calculations are working
     """
-    pbp = setup
+    pbp, _ = setup
     steal = pbp._steal_calc_team()
 
     assert steal.loc[steal["team_id"] == 1610612746, "stl"].values[0] == 7
@@ -434,7 +436,7 @@ def test_calc_block_team(setup):
     """
     test to make sure team block calculations are working
     """
-    pbp = setup
+    pbp, _ = setup
     block = pbp._block_calc_team()
 
     assert block.loc[block["team_id"] == 1610612746, "blk"].values[0] == 5
@@ -445,7 +447,7 @@ def test_calc_plus_minus_team(setup):
     """
     test to make sure team plus_minus calculations are working
     """
-    pbp = setup
+    pbp, _ = setup
     plus_minus = pbp._plus_minus_team()
 
     assert (
@@ -462,7 +464,7 @@ def test_teambygamestats(setup):
     """
     test to make sure team rebound calculations are working
     """
-    pbp = setup
+    pbp, _ = setup
     tbg = pbp.teambygamestats()
 
     assert tbg.loc[tbg["team_id"] == 1610612746, "plus_minus"].values[0] == -16
@@ -497,3 +499,16 @@ def test_teambygamestats(setup):
     assert tbg.loc[tbg["team_id"] == 1610612746, "opponent_abbrev"].values[0] == "DEN"
     assert tbg.loc[tbg["team_id"] == 1610612743, "opponent"].values[0] == 1610612746
     assert tbg.loc[tbg["team_id"] == 1610612743, "opponent_abbrev"].values[0] == "LAC"
+
+
+def test_pbg_edge_case(setup):
+    """
+    test some edge cases where pbg calcs created two rows in the old playerbygamestats
+    calculations. The new ones just drop the second row so I want to make sure those
+    stats get counted properly
+    """
+
+    _, pbp = setup
+    pbg = pbp.playerbygamestats()
+
+    assert pbg.loc[pbg["player_id"] == 1882, "dreb"].values[0] == 4

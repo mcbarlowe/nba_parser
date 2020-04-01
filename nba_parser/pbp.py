@@ -198,18 +198,16 @@ class PbP:
         function to calculate player's offensive and defensive rebound totals
         """
         rebounds = (
-            self.df.groupby(["player1_id", "game_id", "game_date", "player1_team_id"])[
+            self.df.groupby(["player1_id", "game_id", "game_date"])[
                 ["is_o_rebound", "is_d_rebound"]
             ]
             .sum()
             .reset_index()
         )
 
-        rebounds["player1_team_id"] = rebounds["player1_team_id"].astype(int)
         rebounds.rename(
             columns={
                 "player1_id": "player_id",
-                "player1_team_id": "team_id",
                 "is_o_rebound": "oreb",
                 "is_d_rebound": "dreb",
             },
@@ -1809,9 +1807,7 @@ class PbP:
         pbg = pbg.merge(
             assists, how="left", on=["player_id", "team_id", "game_date", "game_id"]
         )
-        pbg = pbg.merge(
-            rebounds, how="left", on=["player_id", "team_id", "game_date", "game_id"]
-        )
+        pbg = pbg.merge(rebounds, how="left", on=["player_id", "game_date", "game_id"])
         pbg = pbg.merge(
             turnovers, how="left", on=["player_id", "team_id", "game_date", "game_id"]
         )
