@@ -1,3 +1,5 @@
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/mcbarlowe/nba_parser/commits/master)
 # `nba_parser`
 
 This will be a repository where I store all my scripts and tests for compiling and calculating
