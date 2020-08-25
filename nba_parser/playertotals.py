@@ -275,7 +275,7 @@ class PlayerTotals:
         train_y = rapm_shifts[["points_per_100_poss"]].to_numpy()
         possessions = rapm_shifts["possessions"]
 
-        lambdas_rapm = [0.01, 0.05, 0.1]
+        lambdas_rapm = [0.01, 0.025, 0.05, .075, 0.1]
         alphas = [lambda_to_alpha(l, train_x.shape[0]) for l in lambdas_rapm]
         clf = RidgeCV(alphas=alphas, cv=5, fit_intercept=True, normalize=False)
         model = clf.fit(train_x, train_y, sample_weight=possessions)
