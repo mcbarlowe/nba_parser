@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 setup(
     name="nba_parser",
     packages=["nba_parser"],
-    version="0.2",
+    version="0.2.1",
     license="GNU General Public License v3.0",
     description="python package to clean up ETL functions using nba_scraper output as input",
     long_description=long_description,
@@ -21,5 +21,6 @@ setup(
         "Topic :: Software Development :: Build Tools",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
 )
