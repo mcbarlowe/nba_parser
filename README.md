@@ -1,9 +1,10 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/mcbarlowe/nba_parser/commits/master)
+[![Maintenance](https://img.shields.io/maintenance/no/2021)](https://github.com/mcbarlowe/nba_parser/commits/master)
 [![PyPI version](https://badge.fury.io/py/nba-parser.svg)](https://badge.fury.io/py/nba-parser)
 [![Downloads](https://pepy.tech/badge/nba-parser)](https://pepy.tech/project/nba-parser)
 [![Build Status](https://travis-ci.org/mcbarlowe/nba_parser.svg?branch=master)](https://travis-ci.org/mcbarlowe/nba_parser)
 [![codecov](https://codecov.io/gh/mcbarlowe/nba_parser/branch/master/graph/badge.svg)](https://codecov.io/gh/mcbarlowe/nba_parser)
+# This package is no longer being maintained. Any current issues or new ones will not be fixed
 # `nba_parser`
 
 This will be a repository where I store all my scripts and tests for compiling and calculating
